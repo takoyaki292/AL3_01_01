@@ -20,7 +20,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
-	win->CreateGameWindow();
+	win->CreateGameWindow("GC2B_08_シミズ_タクミ");
 
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
