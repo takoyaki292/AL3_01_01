@@ -3,6 +3,7 @@
 #include <cassert>
 #include "PrimitiveDrawer.h"
 #include "AxisIndicator.h"
+#include "ImGuiManager.h"
 
 GameScene::GameScene() {}
 
@@ -21,6 +22,10 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("mario.jpeg");
 	worldTransform_.Initialize();
 	viewProjection_.Initialize();
+	soundDateHandle_ = audio_->LoadWave("fanfare.wav");
+
+	audio_->PlayWave(soundDateHandle_);
+	voiceHandle_ = audio_->PlayWave(soundDateHandle_, true);
 
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
 	//デバックカメラ
@@ -34,7 +39,24 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 }
 
-void GameScene::Update() { debugCamera_->Update(); }
+void GameScene::Update() { 
+	//if (input_->TriggerKey[DIK_SPACE])
+	//{
+	//	audio_->StopWave(voiceHandle_);
+	//}
+#ifdef _DEBUG
+
+
+	//デバック時に動く
+	ImGui::Begin("Debug1");
+	//ImGui::Text("Kamata Tarou %d %d %d", 2050, 12, 31);
+	ImGui::InputFloat3("InputFloat3", inputFlact3);
+	ImGui::SliderFloat3("SliderFloat3", inputFlact3,0.0f,1.0f);
+	ImGui::ShowDemoWindow();
+	ImGui::End();
+#endif // _DEBUG
+
+	debugCamera_->Update(); }
 
 void GameScene::Draw() {
 
@@ -43,11 +65,11 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ラインの描画
 	/// </summary>
-	//for (int i = 0; i < 10; i++)
-	//{
-	//	PrimitiveDrawer::GetInstance()->DrawLine3d
-	//	({(float)i * 2, 0, 0}, {(float)i * 2, 15, 0}, {1.0f, 1.0f, 0.0f, 1.0f});
-	//}
+	for (int i = 0; i < 10; i++)
+	{
+		PrimitiveDrawer::GetInstance()->DrawLine3d
+		({(float)i * 2, 0, 0}, {(float)i * 2, 15, 0}, {1.0f, 1.0f, 0.0f, 1.0f});
+	}
 #pragma region 背景スプライト描画
 	// 背景スプライト描画前処理
 	Sprite::PreDraw(commandList);

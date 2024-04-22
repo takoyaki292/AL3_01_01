@@ -47,6 +47,8 @@ private: // メンバ変数
 
 	uint32_t soundDateHandle_ = 0;
 	uint32_t voiceHandle_ = 0;
+
+	float inputFlact3[3] = {0, 0, 0};
 	//モデル
 	Model* model_ = nullptr;
 
