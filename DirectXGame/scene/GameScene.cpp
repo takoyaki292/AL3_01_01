@@ -62,7 +62,7 @@ void GameScene::Initialize() {
 	{
 		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-			
+			if (i%2==0&&j%2==0)
 			{
 				worldTransformBlocks_[i][j] = new WorldTransform();
 				worldTransformBlocks_[i][j]->Initialize();
@@ -75,18 +75,16 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	debugCamera_ = new DebugCamera(1280, 720);
+	debugWorldTransform_.Initialize();
+	debugViewProjection_.Initialize();
 }
 
-void GameScene::Update()
-{
-	//ブロックの更新
-	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) 
-	{
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) 
-		{
-			if (!worldTransformBlock)
-			{
-				continue;	
+void GameScene::Update() {
+	// ブロックの更新
+	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock) {
+				continue;
 			}
 			worldTransformBlock->matWorld_ = worldTransformBlock->MakeAffineMatrix(
 			    worldTransformBlock->scale_, worldTransformBlock->rotation_,
@@ -95,10 +93,21 @@ void GameScene::Update()
 		}
 	}
 
+#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_BACK)) 
+	{
+		isDebugCameraActive_ = true;
+	}
+
+#endif // DEBUG
 	debugCamera_->Update();
-//#ifdef DEBUG
-//	if (Input_->TriggrKey())
-//#endif // DEBUG
+	if (isDebugCameraActive_) {
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+	}
 }
 void GameScene::Draw() {
 
@@ -123,14 +132,6 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 	
-	//for (std::vector<WorldTransform*> WorldTransformLine : worldTransformBlocks_)
-	//{
-	//	for (WorldTransform* worldTransformBlock : WorldTransformLine	)
-	//	{
-	//		modelBlock_->Draw(*worldTransformBlock, viewProjection_);
-	//	}
-	//
-	//}
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>

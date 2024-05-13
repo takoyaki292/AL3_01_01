@@ -58,6 +58,9 @@ private: // メンバ変数
 
 	bool isDebugCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
+
+	WorldTransform debugWorldTransform_;
+	ViewProjection debugViewProjection_;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
