@@ -8,7 +8,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <vector>
-
+#include "DebugCamera.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -52,9 +52,12 @@ private: // メンバ変数
 	Model* modelBlock_ = nullptr;
 
 	//ブロック用のワールドトランスフォーム
-	std::vector<WorldTransform*> worldTransformBlocks_; 
+	//std::vector<WorldTransform*> worldTransformBlocks_; 
+	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 	ViewProjection viewProjection_;
 
+	bool isDebugCameraActive_ = false;
+	DebugCamera* debugCamera_ = nullptr;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

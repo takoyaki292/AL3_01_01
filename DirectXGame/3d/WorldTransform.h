@@ -54,7 +54,10 @@ public:
 	/// <summary>
 	/// 行列の計算・転送する
 	/// </summary>
+	
 	void UpdateMatrix();
+	Matrix4x4 Mu(Matrix4x4 matrix1, Matrix4x4 matrix2);
+	Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
 private:
 	// 定数バッファ
@@ -66,6 +69,7 @@ private:
 
 	WorldTransform& operator=(const WorldTransform&) = delete;
 
+	
 };
 
 static_assert(!std::is_copy_assignable_v<WorldTransform>);
