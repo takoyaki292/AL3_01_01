@@ -9,6 +9,7 @@
 #include "WorldTransform.h"
 #include <vector>
 #include "DebugCamera.h"
+#include "Skydome.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -46,7 +47,9 @@ private: // メンバ変数
 	Audio* audio_ = nullptr;
 
 	//テクスチャハンドル
-	uint32_t textureHandle_ = 0;
+	uint32_t blockTextureHandle_ = 0;
+	//uint32_t textureHandle_ = 0;
+
 
 	//モデル
 	Model* modelBlock_ = nullptr;
@@ -61,6 +64,10 @@ private: // メンバ変数
 
 	WorldTransform debugWorldTransform_;
 	ViewProjection debugViewProjection_;
+
+	Skydome* skydome_=nullptr;
+	Model* modelSkydome_ = nullptr;
+	ViewProjection skydomeViewProjection_;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

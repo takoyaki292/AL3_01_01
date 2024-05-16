@@ -23,6 +23,8 @@ GameScene::~GameScene() {
 	//worldTransformBlocks_.clear();
 
 	delete debugCamera_;
+	delete skydome_;
+	delete modelSkydome_;
 }
 
 void GameScene::Initialize() {
@@ -31,7 +33,8 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	textureHandle_ = TextureManager::Load("uvChecker.png");
+	blockTextureHandle_ = TextureManager::Load("uvChecker.png");
+	//textureHandle_ = TextureManager::Load("skydome/skydome.png");
 	modelBlock_ = Model::Create();
 
 
@@ -48,16 +51,7 @@ void GameScene::Initialize() {
 	{
 		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
 	}
-	//拡張for文
-	//
-	//ここでキューブを作成する
-	//for (uint32_t i = 0; i < kNumBlockHorizontal; ++i)
-	//{
-	//	worldTransformBlocks_[i]=new WorldTransform;
-	//	worldTransformBlocks_[i]->Initialize();
-	//	worldTransformBlocks_[i]->translation_.x = kBlockWidth * i;
-	//	worldTransformBlocks_[i]->translation_.y = 0.0f;
-	//}
+
 	for (uint32_t i = 0; i < kNumBlockVirtical; ++i)
 	{
 		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j)
@@ -73,13 +67,21 @@ void GameScene::Initialize() {
 		}
 	}
 	viewProjection_.Initialize();
+	skydomeViewProjection_.Initialize();
 
 	debugCamera_ = new DebugCamera(1280, 720);
 	debugWorldTransform_.Initialize();
 	debugViewProjection_.Initialize();
+
+
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	skydome_ = new Skydome;
+	skydome_->Initialize(modelSkydome_, &skydomeViewProjection_);
+
 }
 
-void GameScene::Update() {
+void GameScene::Update()
+{
 	// ブロックの更新
 	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -93,11 +95,18 @@ void GameScene::Update() {
 		}
 	}
 
+	skydome_->Update();
+
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) 
 	{
 		isDebugCameraActive_ = true;
 	}
+	else if (input_->TriggerKey(DIK_P))
+	{
+		isDebugCameraActive_ = false;
+	}
+
 
 #endif // DEBUG
 	debugCamera_->Update();
@@ -108,6 +117,9 @@ void GameScene::Update() {
 	} else {
 		viewProjection_.UpdateMatrix();
 	}
+
+
+	
 }
 void GameScene::Draw() {
 
@@ -121,7 +133,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-
+	//skydome_->Draw();
+	//modelSkydome_->Draw();
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア
@@ -135,6 +148,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	skydome_->Draw();
 
 	/// ブロックの描画
 
