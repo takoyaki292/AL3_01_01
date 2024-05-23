@@ -8,12 +8,12 @@ void GameScene::GenerateBlocks() {
 	uint32_t numBlockVirtical = mapChipField_->GetNumBlockVirtical();
 	uint32_t numBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
 
+	// numBlockVirtical = 20;
+	// numBlockHorizontal = 100;
 	worldTransformBlocks_.resize(numBlockVirtical);
+	
 	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
 		worldTransformBlocks_[i].resize(numBlockHorizontal);
-	}
-
-	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
 		for (uint32_t j = 0; j < numBlockHorizontal; ++j) {
 			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
 				WorldTransform* worldTransform = new WorldTransform();
@@ -26,7 +26,11 @@ void GameScene::GenerateBlocks() {
 	}
 }
 
-GameScene::~GameScene() { delete mapChipField_; }
+
+GameScene::~GameScene() {
+	delete mapChipField_;
+	delete debugCamera_;
+}
 
 void GameScene::Initialize() {
 
@@ -37,8 +41,16 @@ void GameScene::Initialize() {
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 
+	
+	debugCamera_ = new DebugCamera(1280, 720);
+
+	viewProjection_.Initialize();
+	
 	GenerateBlocks();
 }
+
+
+
 
 void GameScene::Update() 
 {
@@ -53,6 +65,22 @@ void GameScene::Update()
 			worldTransformBlock->TransferMatrix();
 		}
 	}
+
+	#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_BACK)) {
+		isDebugCameraActive_ = true;
+	}
+	
+#endif // DEBUG
+	debugCamera_->Update();
+	if (isDebugCameraActive_) {
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+	}
+	
 }
 
 void GameScene::Draw() {
@@ -107,4 +135,5 @@ void GameScene::Draw() {
 
 #pragma endregion
 }
+
 
