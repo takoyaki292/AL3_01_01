@@ -47,6 +47,8 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 	
 	GenerateBlocks();
+
+	modelBlock_ = Model::Create();
 }
 
 
