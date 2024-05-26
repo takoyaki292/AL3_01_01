@@ -1,6 +1,8 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "Player.h"
+
 
 GameScene::GameScene() {}
 
@@ -30,6 +32,7 @@ void GameScene::GenerateBlocks() {
 GameScene::~GameScene() {
 	delete mapChipField_;
 	delete debugCamera_;
+
 }
 
 void GameScene::Initialize() {
@@ -49,6 +52,11 @@ void GameScene::Initialize() {
 	GenerateBlocks();
 
 	modelBlock_ = Model::Create();
+
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(
+	    mapChipField_->GetNumBlockVirtical(), mapChipField_->GetNumBlockHorizontal());
+
+	player_= new Player;
 }
 
 
