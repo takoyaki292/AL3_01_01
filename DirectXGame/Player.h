@@ -1,10 +1,13 @@
-#pragma once
+ï»¿#pragma once
 #include"Model.h"
+#include "ViewProjection.h"
+#include "WorldTransform.h"
+#include "Model.h"
 class Player
 {
 	public:
 	/// <summary>
-	/// ‰Šú‰»
+	/// åˆæœŸåŒ–
 	/// </summary>
 	/// <param name="model"></param>
 	/// <param name="viewProjection"></param>
@@ -12,15 +15,20 @@ class Player
 	void Initalize(Model* model,ViewProjection* viewProjection,const Vector3&position);
 
 	/// <summary>
-	/// –ˆƒtƒŒ[ƒ€ˆ—
+	/// æ¯ãƒ•ãƒ¬ãƒ¼ãƒ å‡¦ç†
 	/// </summary>
 	void Update();
 
 	/// <summary>
-	/// •`‰æˆ—
+	/// æç”»å‡¦ç†
 	/// </summary>
 	void Draw();
 
-	WorldTransform* worldTransform_;
 	private:
+	WorldTransform worldTransform_;
+	ViewProjection* viewProjection_;
+
+	Vector3 velocity_ = {};
+	static inline const float kAceeleration = 3;
+	Model* playerModel_ ;
 };

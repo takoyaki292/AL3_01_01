@@ -10,7 +10,7 @@
 #include "MapChipField.h"
 #include <vector>
 #include "DebugCamera.h"
-
+#include "Player.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -51,6 +51,8 @@ private: // メンバ変数
 
 	// モデル
 	Model* modelBlock_ = nullptr;
+	Model* modelPlayer_ = nullptr;
+	
 
 	bool isDebugCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
@@ -58,9 +60,12 @@ private: // メンバ変数
 	// std::vector<WorldTransform*> worldTransformBlocks_;
 	//std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 	ViewProjection viewProjection_;
-
+	WorldTransform playerWorldTransform_;
 	MapChipField* mapChipField_;
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+	Player* player_ = nullptr;
+	
+	
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

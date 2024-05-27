@@ -32,7 +32,7 @@ void GameScene::GenerateBlocks() {
 GameScene::~GameScene() {
 	delete mapChipField_;
 	delete debugCamera_;
-
+	//delete player_;
 }
 
 void GameScene::Initialize() {
@@ -53,10 +53,15 @@ void GameScene::Initialize() {
 
 	modelBlock_ = Model::Create();
 
+	playerWorldTransform_.Initialize();
+
+	player_ = new Player();
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(
 	    mapChipField_->GetNumBlockVirtical(), mapChipField_->GetNumBlockHorizontal());
 
-	player_= new Player;
+	modelPlayer_ = Model::CreateFromOBJ("playerModel", true);
+	
+	player_->Initalize(modelPlayer_, &viewProjection_, playerPosition);
 }
 
 
@@ -64,6 +69,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() 
 {
+	
 	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {
@@ -76,11 +82,17 @@ void GameScene::Update()
 		}
 	}
 
+	player_->Update();
+	
+
 	#ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {
 		isDebugCameraActive_ = true;
 	}
-	
+	//if (input_->TriggerKey(DIK_O))
+	//{
+	//	player_->Update();
+	//}
 #endif // DEBUG
 	debugCamera_->Update();
 	if (isDebugCameraActive_) {
@@ -120,14 +132,16 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock) {
-				continue;
-			}
-			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
-		}
-	}
+	player_->Draw();
+	///for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
+	///	for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+	///		if (!worldTransformBlock) {
+	///			continue;
+	///		}
+	///		modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+	///	}
+	///}
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
