@@ -1,13 +1,19 @@
+﻿#define NOMINMAX
 #include "Player.h"
 #include <numbers>
 #include <Input.h>
 #include <model.h>
 #include "Model.h"
-
+#include "string.h"
+#include<string>
+#include <imgui.h>
+#include <algorithm>
 void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vector3& position) 
 {
 	worldTransform_.Initialize();
 	worldTransform_.translation_=position;
+
+	
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 
 	viewProjection_ = viewProjection;
@@ -17,22 +23,97 @@ void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vecto
 
 void Player::Update() 
 { 
-	if (Input::GetInstance()->PushKey(DIK_RIGHT) ||
-		Input::GetInstance()->PushKey(DIK_LEFT))
+	// 着地するときのフラグ
+	bool landing = false;
+
+	//地面にいるとき
+	if (onGround_==true)
 	{
-		Vector3 acceleration = {};
-		if (Input::GetInstance()->PushKey(DIK_RIGHT))
+		if (velocity_.y > 0.0f)
 		{
-			acceleration.x += kAceeleration;
+			onGround_ = false;
 		}
-		else if (Input::GetInstance()->PushKey(DIK_LEFT))
+
+		//左右移動操作
+		if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
+			Vector3 acceleration = {};
+			if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
+				if (velocity_.x < 0.0f) {
+					velocity_.x *= (1.0f - kAttenuation);
+				}
+				acceleration.x += kAceeleration;
+				// 向かう方向に変わる
+				if (lrDirection_ != LRDirection::kRight) {
+					lrDirection_ = LRDirection::kRight;
+					turnFirstRotationY_ = -1.0f;
+					turnTimer_ = 3.0f;
+				}
+			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
+				if (velocity_.x > 0.0f) {
+					velocity_.x *= (1.0f - kAttenuation);
+				}
+				acceleration.x -= kAceeleration;
+				// 向かう方向に変わる
+				if (lrDirection_ != LRDirection::kLeft) {
+					lrDirection_ = LRDirection::kLeft;
+					turnFirstRotationY_ = 1.0f;
+					turnTimer_ = 3.0f;
+				}
+			} else {
+				velocity_.x += (1.0f - kAttenuation);
+			}
+
+			velocity_ += acceleration;
+			//velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
+
+			if (turnTimer_ > 0.0f) {
+				turnTimer_ = 60.0f / 1.0f;
+				float destinationRotationYTable[] = {
+				    std::numbers::pi_v<float> / 2.0f, std::numbers::pi_v<float> * 3.0f / 2.0f};
+
+				// float destinationRotationY =
+				//     destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
+
+				worldTransform_.rotation_.y = sin((turnFirstRotationY_ * turnTimer_) / 2);
+			}
+		}
+		
+		// 上キー押していたら
+		if (Input::GetInstance()->TriggerKey(DIK_UP)) 
 		{
-			acceleration.x -= kAceeleration;
+			
+			// ジャンプの加速度
+			velocity_ += Vector3(0, kJumpAcceleration, 0);
 		}
-		velocity_+= acceleration;
 	}
-	worldTransform_.translation_+= velocity_;
+	//空中にいるとき
+	else if (onGround_ == false)
+	{
 	
+		
+		velocity_ += Vector3(0, -kGravityAcceleration, 0);
+		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
+		
+		// 地面との当たり判定
+		if (velocity_.y < 0)
+		{
+			if (worldTransform_.translation_.y <= 1.0f) 
+			{
+				landing = true;
+			}
+		}
+		
+		//着地のフラグがtrue
+		if (landing==1)
+		{
+			worldTransform_.translation_.y = 1.0f;
+			velocity_.x *= (1.0f - kAttenuationLanding);
+			velocity_.y = 0.0f;
+			onGround_ = true;
+		}	
+	}
+	worldTransform_.translation_ += velocity_;
+
 	worldTransform_.UpdateMatrix();
 }
 

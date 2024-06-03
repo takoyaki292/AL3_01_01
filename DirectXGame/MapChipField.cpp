@@ -17,10 +17,6 @@ namespace{
 	};
 }
 
-uint32_t MapChipField::GetNumBlockVirtical() 
-{ return kNumBlockVirtical; }
-
-uint32_t MapChipField::GetNumBlockHorizontal() { return kNumBlockHorizontal; }
 
 
 void MapChipField::ResetMapChipData() {
@@ -73,5 +69,19 @@ MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t yIndex
 }
 
 Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex) {
+
+	// return Vector3(kBlockWidth * xIndex, kBlockHeight * (kNumBlockHorizontal-1-yIndex), 0);
+	//return Vector3(kBlockWidth * xIndex, kBlockHeight * (kBlockWidth-yIndex), 0);
+
+	//Vector3 a = {(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVirtical - 1 - yIndex), 0)};
 	return Vector3(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVirtical - 1 - yIndex), 0);
 }
+
+Vector3 MapChipField::GetMapChipPositionByPlayerIndex(uint32_t xIndex, uint32_t yIndex) {
+
+	Vector3 a = {(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVirtical - 1 - yIndex), 0)};
+	return a;
+}
+uint32_t MapChipField::GetNumBlockVirtical() { return kNumBlockVirtical; }
+uint32_t MapChipField::GetNumBlockHorizontal() { return kNumBlockHorizontal; }
+uint32_t MapChipField::GetNumPlayerHorizontal() { return kNumPlayerHeight; }

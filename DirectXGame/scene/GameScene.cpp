@@ -56,8 +56,8 @@ void GameScene::Initialize() {
 	playerWorldTransform_.Initialize();
 
 	player_ = new Player();
-	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(
-	    mapChipField_->GetNumBlockVirtical(), mapChipField_->GetNumBlockHorizontal());
+	Vector3 playerPosition =
+	    mapChipField_->GetMapChipPositionByPlayerIndex(mapChipField_->GetNumBlockVirtical(),mapChipField_->GetNumBlockHorizontal());
 
 	modelPlayer_ = Model::CreateFromOBJ("playerModel", true);
 	
@@ -133,14 +133,14 @@ void GameScene::Draw() {
 	/// </summary>
 
 	player_->Draw();
-	///for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
-	///	for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-	///		if (!worldTransformBlock) {
-	///			continue;
-	///		}
-	///		modelBlock_->Draw(*worldTransformBlock, viewProjection_);
-	///	}
-	///}
+	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock) {
+				continue;
+			}
+			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+		}
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
