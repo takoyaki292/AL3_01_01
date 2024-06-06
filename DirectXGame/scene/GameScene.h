@@ -11,6 +11,7 @@
 #include <vector>
 #include "DebugCamera.h"
 #include "Player.h"
+#include "CameraController.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -65,7 +66,7 @@ private: // メンバ変数
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 	Player* player_ = nullptr;
 	
-	
+	CameraController* cameraController_ = nullptr;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

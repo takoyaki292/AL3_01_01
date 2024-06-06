@@ -32,7 +32,8 @@ void GameScene::GenerateBlocks() {
 GameScene::~GameScene() {
 	delete mapChipField_;
 	delete debugCamera_;
-	//delete player_;
+	delete player_;
+	delete cameraController_;
 }
 
 void GameScene::Initialize() {
@@ -62,6 +63,12 @@ void GameScene::Initialize() {
 	modelPlayer_ = Model::CreateFromOBJ("playerModel", true);
 	
 	player_->Initalize(modelPlayer_, &viewProjection_, playerPosition);
+
+	cameraController_ = new CameraController();
+	cameraController_->Initialize();
+	cameraController_->SetTarget(player_);
+	cameraController_->Reset();
+	cameraController_->SetMovebleArea({0, 0, 0, 0});
 }
 
 
@@ -83,7 +90,7 @@ void GameScene::Update()
 	}
 
 	player_->Update();
-	
+	cameraController_->Update();
 
 	#ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {

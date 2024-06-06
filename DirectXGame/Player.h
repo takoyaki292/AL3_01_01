@@ -29,6 +29,9 @@ class Player
 		kRight,
 		kLeft,
 	};
+
+	WorldTransform& GetWorldTransform();
+
 private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;

@@ -122,3 +122,5 @@ void Player::Draw()
 	playerModel_->Draw(worldTransform_, *viewProjection_);
 
 }
+
+WorldTransform& Player::GetWorldTransform() { return worldTransform_; }
