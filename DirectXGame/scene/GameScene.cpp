@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "Player.h"
+#include "CameraController.h"
 
 
 GameScene::GameScene() {}
@@ -65,10 +66,11 @@ void GameScene::Initialize() {
 	player_->Initalize(modelPlayer_, &viewProjection_, playerPosition);
 
 	cameraController_ = new CameraController();
-	cameraController_->Initialize();
+	cameraController_->Initialize(&viewProjection_);
 	cameraController_->SetTarget(player_);
 	cameraController_->Reset();
-	cameraController_->SetMovebleArea({0, 0, 0, 0});
+	cameraController_->SetMovebleArea({ 0,500, 0,70});
+	
 }
 
 
@@ -91,25 +93,25 @@ void GameScene::Update()
 
 	player_->Update();
 	cameraController_->Update();
-
-	#ifdef _DEBUG
-	if (input_->TriggerKey(DIK_BACK)) {
-		isDebugCameraActive_ = true;
-	}
-	//if (input_->TriggerKey(DIK_O))
-	//{
-	//	player_->Update();
-	//}
-#endif // DEBUG
-	debugCamera_->Update();
-	if (isDebugCameraActive_) {
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		viewProjection_.TransferMatrix();
-	} else {
-		viewProjection_.UpdateMatrix();
-	}
 	
+	//	#ifdef _DEBUG
+//	if (input_->TriggerKey(DIK_BACK)) {
+//		isDebugCameraActive_ = true;
+//	}
+//	//if (input_->TriggerKey(DIK_O))
+//	//{
+//	//	player_->Update();
+//	//}
+//#endif // DEBUG
+//	debugCamera_->Update();
+//	if (isDebugCameraActive_) {
+//		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+//		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+//		viewProjection_.TransferMatrix();
+//	} else {
+//		viewProjection_.UpdateMatrix();
+//	}
+//	
 }
 
 void GameScene::Draw() {

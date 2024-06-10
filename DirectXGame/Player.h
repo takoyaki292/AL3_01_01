@@ -32,6 +32,8 @@ class Player
 
 	WorldTransform& GetWorldTransform();
 
+	const Vector3& GetVelocity() const { return velocity_; }
+
 private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;
@@ -58,4 +60,5 @@ private:
 
 	static inline const float kAttenuationLanding = 1.0f;
 	//bool upKey_ = false;
+	
 };
