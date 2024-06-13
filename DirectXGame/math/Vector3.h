@@ -21,4 +21,6 @@ struct Vector3 final {
 		z = this->z - num.z;
 		return *this;
 	}
+
+	
 };

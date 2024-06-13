@@ -34,6 +34,10 @@ void Player::Update()
 			onGround_ = false;
 		}
 
+		CollisonMapInfo collisonMapInfo;
+		collisonMapInfo.move = velocity_;
+		mapCollision(collisonMapInfo);
+
 		//左右移動操作
 		if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
 			Vector3 acceleration = {};
@@ -112,8 +116,10 @@ void Player::Update()
 			onGround_ = true;
 		}	
 	}
+	//旋回制御
 	worldTransform_.translation_ += velocity_;
 
+	//行列計算
 	worldTransform_.UpdateMatrix();
 }
 
@@ -124,3 +130,35 @@ void Player::Draw()
 }
 
 WorldTransform& Player::GetWorldTransform() { return worldTransform_; }
+
+void Player::SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
+
+
+//マップとの衝突判定
+void Player::mapCollision(CollisonMapInfo& info) { 
+	mapCollisionDetectionUp(&info);
+	mapCollisionDetectionDown(&info);
+	mapCollisionDetectionLeft(&info);
+	mapCollisionDetectionRight(&info);
+}
+
+//マップとの衝突判定の四方向
+void Player::mapCollisionDetectionUp(CollisonMapInfo* collisonMapInfoUp) {}
+
+void Player::mapCollisionDetectionDown(CollisonMapInfo* collisonMapInfoDown) {}
+
+void Player::mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft) {}
+
+void Player::mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight) {}
+
+Vector3 Player::CornnerPosition(const Vector3& center, Corner corner) {
+
+	Vector3 offsetTable[Player::Corner::kNumCorner] = {
+	    {+kWidth / 2.0f, -kHeight / 2.0f, 0}, //  kRgithBottom
+	    {-kWidth / 2.0f, -kHeight / 2.0f, 0}, //  kLeftBottom
+	    {+kWidth / 2.0f, +kHeight / 2.0f, 0}, //  kRightTop
+	    {-kWidth / 2.0f, +kHeight / 2.0f, 0}, //  kLeftTop
+	};
+
+	return center + offsetTable[static_cast<uint32_t>(corner)];
+}

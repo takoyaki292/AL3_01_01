@@ -57,20 +57,26 @@ void GameScene::Initialize() {
 
 	playerWorldTransform_.Initialize();
 
+	
 	player_ = new Player();
+	//Vector3型でポジションを初期化する
 	Vector3 playerPosition =
-	    mapChipField_->GetMapChipPositionByPlayerIndex(mapChipField_->GetNumBlockVirtical(),mapChipField_->GetNumBlockHorizontal());
+	    mapChipField_->GetMapChipPositionByPlayerIndex(mapChipField_->GetNumBlockHorizontal(),mapChipField_->GetNumBlockVirtical());
 
+	//モデルプレイヤーの読み込む
 	modelPlayer_ = Model::CreateFromOBJ("playerModel", true);
 	
+	//プレイヤーの初期化
 	player_->Initalize(modelPlayer_, &viewProjection_, playerPosition);
 
+	///カメラコントロールの初期化
 	cameraController_ = new CameraController();
 	cameraController_->Initialize(&viewProjection_);
 	cameraController_->SetTarget(player_);
 	cameraController_->Reset();
 	cameraController_->SetMovebleArea({ 0,500, 0,70});
 	
+	player_->SetMapChipField(mapChipField_);
 }
 
 

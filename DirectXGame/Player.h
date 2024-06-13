@@ -3,6 +3,9 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Model.h"
+
+class MapChipField;
+
 class Player
 {
 	public:
@@ -24,6 +27,7 @@ class Player
 	/// </summary>
 	void Draw();
 
+	
 	enum class LRDirection
 	{
 		kRight,
@@ -33,6 +37,53 @@ class Player
 	WorldTransform& GetWorldTransform();
 
 	const Vector3& GetVelocity() const { return velocity_; }
+
+
+	/// <summary>
+	/// 外部からポインタを呼ぶ
+	/// </summary>
+	/// <param name="mapChipField"></param>
+	void SetMapChipField(MapChipField* mapChipField);
+
+	/// <summary>
+	/// マップチップとの当たり判定情報
+	/// </summary>
+	struct  CollisonMapInfo {
+		bool ceilingCollisionFlag=false;
+		bool landingFlag=false;
+		bool wallContactFlag=false;
+		Vector3 move;
+	};
+
+	void mapCollision(CollisonMapInfo& info);
+
+	/// <summary>
+	/// マップ衝突の四方向の関数
+	/// </summary>
+	/// <param name="collisonMapInfo"></param>
+	void mapCollisionDetectionUp(CollisonMapInfo* collisonMapInfoUp);
+	void mapCollisionDetectionDown(CollisonMapInfo* collisonMapInfoDown);
+	void mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft);
+	void mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight);
+
+	//四つの核の座標計算
+	//右下、左下、右上、左上
+
+	enum Corner {
+		kRightBottom,
+		kLeftBottom,
+		kRightTop,
+		kLeftTop,
+
+		//要素数
+		kNumCorner,
+	};
+
+	Vector3 CornnerPosition(const Vector3& center, Corner corner);
+
+	//キャラクターの当たり判定のサイズ
+	static inline const float kWidth = 0.8f;
+	static inline const float kHeight = 0.8f;
 
 private:
 	WorldTransform worldTransform_;
@@ -61,4 +112,7 @@ private:
 	static inline const float kAttenuationLanding = 1.0f;
 	//bool upKey_ = false;
 	
+
+	MapChipField* mapChipField_ = nullptr;
+
 };
