@@ -8,21 +8,29 @@
 #include<string>
 #include <imgui.h>
 #include <algorithm>
-void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vector3& position) 
+#include "MapChipField.h"
+#include <cassert>
+#include <functional>
+#include "ImGuiManager.h"
+#include "DebugText.h"
+void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vector3& position)
 {
 	worldTransform_.Initialize();
-	worldTransform_.translation_=position;
+	worldTransform_.translation_ = position;
+	worldTransform_.translation_.y = 2.0f;
+	worldTransform_.translation_.x = 2.0f;
 
-	
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 
 	viewProjection_ = viewProjection;
 	playerModel_ = model;
 
+	
 }
 
 void Player::Update() 
 { 
+	
 	// 着地するときのフラグ
 	bool landing = false;
 
@@ -101,7 +109,7 @@ void Player::Update()
 		// 地面との当たり判定
 		if (velocity_.y < 0)
 		{
-			if (worldTransform_.translation_.y <= 1.0f) 
+			if (worldTransform_.translation_.y <= 2.0f) 
 			{
 				landing = true;
 			}
@@ -110,16 +118,25 @@ void Player::Update()
 		//着地のフラグがtrue
 		if (landing==1)
 		{
-			worldTransform_.translation_.y = 1.0f;
+			worldTransform_.translation_.y = 2.0f;
 			velocity_.x *= (1.0f - kAttenuationLanding);
 			velocity_.y = 0.0f;
 			onGround_ = true;
 		}	
 	}
-	//旋回制御
+
+	//移動量を加味して衝突判定
+	 CollisonMapInfo info;
+	 info.move = velocity_;
+	 mapCollision(info);
+
+	Reflection(info);
+
+	ceiling(info);
+	// 旋回制御
 	worldTransform_.translation_ += velocity_;
 
-	//行列計算
+	// 行列計算
 	worldTransform_.UpdateMatrix();
 }
 
@@ -137,19 +154,56 @@ void Player::SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapCh
 //マップとの衝突判定
 void Player::mapCollision(CollisonMapInfo& info) { 
 	mapCollisionDetectionUp(&info);
-	mapCollisionDetectionDown(&info);
-	mapCollisionDetectionLeft(&info);
-	mapCollisionDetectionRight(&info);
+	//mapCollisionDetectionDown(&info);
+	//mapCollisionDetectionLeft(&info);
+	//mapCollisionDetectionRight(&info);
 }
 
 //マップとの衝突判定の四方向
-void Player::mapCollisionDetectionUp(CollisonMapInfo* collisonMapInfoUp) {}
+void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
+	std::array<Vector3, 100> positionNew;
 
-void Player::mapCollisionDetectionDown(CollisonMapInfo* collisonMapInfoDown) {}
+	if (info->move.y <= 0) {
+		return;
+	}
+	for (uint32_t i = 0; i < positionNew.size(); i++)
+	{
+		positionNew[i] = CornnerPosition(
+		    worldTransform_.translation_ + info->move, static_cast<Corner>(i));
+	}
+	
 
-void Player::mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft) {}
+	MapChipType mapChipType;
+	bool hit = false;
+	IndexSet indexSet;
+	//左上の判定
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftTop]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType::kBlock){
+		hit = true;
+	}
+	// 右上の判定
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightTop]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType ::kBlank) {
+		hit = true;
+	}
 
-void Player::mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight) {}
+	if (hit == true){
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(info->move);
+		
+		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		info->move.y = std::max(0.0f, info->move.y);
+		info->wallContactFlag = true;
+	}
+
+}
+
+//void Player::mapCollisionDetectionDown(CollisonMapInfo* collisonMapInfoDown) {}
+//
+//void Player::mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft) {}
+//
+//void Player::mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight) {}
 
 Vector3 Player::CornnerPosition(const Vector3& center, Corner corner) {
 
@@ -159,6 +213,17 @@ Vector3 Player::CornnerPosition(const Vector3& center, Corner corner) {
 	    {+kWidth / 2.0f, +kHeight / 2.0f, 0}, //  kRightTop
 	    {-kWidth / 2.0f, +kHeight / 2.0f, 0}, //  kLeftTop
 	};
-
+	
 	return center + offsetTable[static_cast<uint32_t>(corner)];
+}
+
+void Player::Reflection(const CollisonMapInfo& info) { worldTransform_.translation_ += info.move; 
+}
+
+void Player::ceiling(const CollisonMapInfo& info) { 
+	if (info.ceilingCollisionFlag) {
+		DebugText::GetInstance()->ConsolePrintf("hit ceiling\n");
+		velocity_.y = 0;
+	}
+	
 }

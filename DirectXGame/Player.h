@@ -52,7 +52,7 @@ class Player
 		bool ceilingCollisionFlag=false;
 		bool landingFlag=false;
 		bool wallContactFlag=false;
-		Vector3 move;
+		Vector3 move = {};
 	};
 
 	void mapCollision(CollisonMapInfo& info);
@@ -62,9 +62,9 @@ class Player
 	/// </summary>
 	/// <param name="collisonMapInfo"></param>
 	void mapCollisionDetectionUp(CollisonMapInfo* collisonMapInfoUp);
-	void mapCollisionDetectionDown(CollisonMapInfo* collisonMapInfoDown);
-	void mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft);
-	void mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight);
+	//void mapCollisionDetectionDown(CollisonMapInfo* collisonMapInfoDown);
+	//void mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft);
+	//void mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight);
 
 	//四つの核の座標計算
 	//右下、左下、右上、左上
@@ -84,6 +84,18 @@ class Player
 	//キャラクターの当たり判定のサイズ
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
+
+	/// <summary>
+	/// 判定結果を反映する
+	/// </summary>
+	/// <param name="info"></param>
+	void Reflection(const CollisonMapInfo& info);
+
+	/// <summary>
+	/// 天井に接触する
+	/// </summary>
+	void ceiling(const CollisonMapInfo& info);
+
 
 private:
 	WorldTransform worldTransform_;
@@ -107,9 +119,11 @@ private:
 
 	static inline const float kGravityAcceleration = 1.0f;
 	static inline const float kLimitFallSpeed = 2.0f;
-	static inline const float kJumpAcceleration = 4.0f;
+	static inline const float kJumpAcceleration = 2.0f;
 
 	static inline const float kAttenuationLanding = 1.0f;
+	
+	static inline const float kBlack = 0.0f;
 	//bool upKey_ = false;
 	
 

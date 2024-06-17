@@ -60,8 +60,8 @@ void GameScene::Initialize() {
 	
 	player_ = new Player();
 	//Vector3型でポジションを初期化する
-	Vector3 playerPosition =
-	    mapChipField_->GetMapChipPositionByPlayerIndex(mapChipField_->GetNumBlockHorizontal(),mapChipField_->GetNumBlockVirtical());
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByPlayerIndex(
+	    mapChipField_->GetNumBlockHorizontal(),mapChipField_->GetNumBlockVirtical());
 
 	//モデルプレイヤーの読み込む
 	modelPlayer_ = Model::CreateFromOBJ("playerModel", true);

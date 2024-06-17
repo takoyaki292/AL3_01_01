@@ -7,9 +7,6 @@
 #include <sstream>
 
 
-
-
-
 namespace{
 	std::map<std::string, MapChipType> mapChipTable = {
 		{"0", MapChipType::kBlank},
@@ -73,6 +70,29 @@ Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex
 	return Vector3(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVirtical - 1 - yIndex), 0);
 }
 
+
+
+IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3& position) {
+	IndexSet indexSet = {};
+	uint32_t tempYIndex = {};
+	indexSet.xIndex = ((uint32_t)position.x + (uint32_t)kBlockWidth / 2) / (uint32_t)kBlockWidth;
+	tempYIndex = ((uint32_t)position.y + (uint32_t)kBlockHeight / 2) / (uint32_t)kBlockHeight;
+	indexSet.yIndex = (uint32_t)kNumBlockVirtical - 1 - tempYIndex;
+	return indexSet;
+}
+
+Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t yIndex) {
+	Vector3 center = GetMapChipPositionByPlayerIndex(xIndex, yIndex);
+
+	Rect rect;
+	rect.left = center.x - kBlockWidth / 2.0f;
+	rect.right = center.x + kBlockWidth / 2.0f;
+	rect.bottom = center.y + kBlockHeight / 2.0f;
+	rect.top = center.y - kBlockHeight / 2.0f;
+
+	return rect; 
+}
+
 Vector3 MapChipField::GetMapChipPositionByPlayerIndex(uint32_t xIndex, uint32_t yIndex) {
 
 	Vector3 a = {(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVirtical - 1 - yIndex), 0)};
@@ -81,3 +101,5 @@ Vector3 MapChipField::GetMapChipPositionByPlayerIndex(uint32_t xIndex, uint32_t 
 uint32_t MapChipField::GetNumBlockVirtical() { return kNumBlockVirtical; }
 uint32_t MapChipField::GetNumBlockHorizontal() { return kNumBlockHorizontal; }
 uint32_t MapChipField::GetNumPlayerHorizontal() { return kNumPlayerHeight; }
+
+

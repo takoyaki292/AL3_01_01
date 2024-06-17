@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <cstdint>
 #include <vector>
 #include <string>
@@ -15,6 +15,17 @@ struct  MapChipData
 	std::vector<std::vector<MapChipType>> data;
 };
 
+struct IndexSet {
+	uint32_t xIndex;
+	uint32_t yIndex;
+};
+
+struct Rect {
+	float left;
+	float right;
+	float bottom;
+	float top;
+};
 class MapChipField 
 {
 public:
@@ -33,13 +44,25 @@ public:
 	Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex);
 	Vector3 GetMapChipPositionByPlayerIndex(uint32_t xIndex, uint32_t yIndex);
 
-	private:
-	static inline const float kBlockWidth = 1.0f;
-	static inline const float kBlockHeight = 1.0f;
+	/// <summary>
+	/// 座標からマップチップ番号を取得
+	/// </summary>
+	IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
+	
+	/// <summary>
+	/// ブロックの範囲取得
+	/// </summary>
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
 
-	static inline const uint32_t kNumBlockVirtical = 20;
+	static inline const float kBlockWidth = 2.0f;
+	static inline const float kBlockHeight = 2.0f;
+private:
+
+	static inline const uint32_t kNumBlockVirtical = 30;
 	static inline const uint32_t kNumBlockHorizontal = 100;
 	static inline const uint32_t kNumPlayerHeight = 100;
 
 	MapChipData mapChipData_;
+
+	
 };
