@@ -81,9 +81,6 @@ class Player
 
 	Vector3 CornnerPosition(const Vector3& center, Corner corner);
 
-	//キャラクターの当たり判定のサイズ
-	static inline const float kWidth = 0.8f;
-	static inline const float kHeight = 0.8f;
 
 	/// <summary>
 	/// 判定結果を反映する
@@ -96,6 +93,7 @@ class Player
 	/// </summary>
 	void ceiling(const CollisonMapInfo& info);
 
+	
 
 private:
 	WorldTransform worldTransform_;
@@ -117,9 +115,9 @@ private:
 
 	bool onGround_ = true;
 
-	static inline const float kGravityAcceleration = 1.0f;
-	static inline const float kLimitFallSpeed = 2.0f;
-	static inline const float kJumpAcceleration = 2.0f;
+	static inline const float kGravityAcceleration = 0.1f;
+	static inline const float kLimitFallSpeed = 1.0f;
+	static inline const float kJumpAcceleration = 1.0f;
 
 	static inline const float kAttenuationLanding = 1.0f;
 	
@@ -129,4 +127,9 @@ private:
 
 	MapChipField* mapChipField_ = nullptr;
 
+
+	// キャラクターの当たり判定のサイズ
+	static inline const float kWidth = 0.8f;
+	static inline const float kHeight = 0.8f;
 };
+

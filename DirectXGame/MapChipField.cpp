@@ -74,10 +74,12 @@ Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex
 
 IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3& position) {
 	IndexSet indexSet = {};
-	uint32_t tempYIndex = {};
+	IndexSet tempIndex = {};
 	indexSet.xIndex = ((uint32_t)position.x + (uint32_t)kBlockWidth / 2) / (uint32_t)kBlockWidth;
-	tempYIndex = ((uint32_t)position.y + (uint32_t)kBlockHeight / 2) / (uint32_t)kBlockHeight;
-	indexSet.yIndex = (uint32_t)kNumBlockVirtical - 1 - tempYIndex;
+	tempIndex.yIndex = ((uint32_t)position.y + (uint32_t)kBlockHeight / 2) / (uint32_t)kBlockHeight;
+	indexSet.yIndex =
+	    (kNumBlockVirtical - tempIndex.yIndex) - (uint32_t)kBlockHeight;
+	
 	return indexSet;
 }
 
@@ -87,8 +89,8 @@ Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t yIndex) {
 	Rect rect;
 	rect.left = center.x - kBlockWidth / 2.0f;
 	rect.right = center.x + kBlockWidth / 2.0f;
-	rect.bottom = center.y + kBlockHeight / 2.0f;
-	rect.top = center.y - kBlockHeight / 2.0f;
+	rect.bottom = center.y - kBlockHeight / 2.0f;
+	rect.top = center.y + kBlockHeight / 2.0f;
 
 	return rect; 
 }

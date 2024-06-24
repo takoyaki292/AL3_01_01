@@ -28,17 +28,14 @@ void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vecto
 	
 }
 
-void Player::Update() 
-{ 
-	
+void Player::Update() {
+
 	// 着地するときのフラグ
 	bool landing = false;
 
-	//地面にいるとき
-	if (onGround_==true)
-	{
-		if (velocity_.y > 0.0f)
-		{
+	// 地面にいるとき
+	if (onGround_ == true) {
+		if (velocity_.y > 0.0f) {
 			onGround_ = false;
 		}
 
@@ -46,7 +43,7 @@ void Player::Update()
 		collisonMapInfo.move = velocity_;
 		mapCollision(collisonMapInfo);
 
-		//左右移動操作
+		// 左右移動操作
 		if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
 			Vector3 acceleration = {};
 			if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
@@ -76,7 +73,7 @@ void Player::Update()
 			}
 
 			velocity_ += acceleration;
-			//velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
+			// velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
 
 			if (turnTimer_ > 0.0f) {
 				turnTimer_ = 60.0f / 1.0f;
@@ -89,50 +86,47 @@ void Player::Update()
 				worldTransform_.rotation_.y = sin((turnFirstRotationY_ * turnTimer_) / 2);
 			}
 		}
-		
+
 		// 上キー押していたら
-		if (Input::GetInstance()->TriggerKey(DIK_UP)) 
-		{
-			
+		if (Input::GetInstance()->TriggerKey(DIK_UP)) {
+
 			// ジャンプの加速度
 			velocity_ += Vector3(0, kJumpAcceleration, 0);
 		}
 	}
-	//空中にいるとき
-	else if (onGround_ == false)
-	{
-	
-		
+	// 空中にいるとき
+	else if (onGround_ == false) {
+
 		velocity_ += Vector3(0, -kGravityAcceleration, 0);
 		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
-		
-		// 地面との当たり判定
-		if (velocity_.y < 0)
-		{
-			if (worldTransform_.translation_.y <= 2.0f) 
-			{
-				landing = true;
-			}
+	}
+	// 移動量を加味して衝突判定
+	CollisonMapInfo info;
+	info.move = velocity_;
+	mapCollision(info);
+
+	//反映する処理
+	Reflection(info);
+	//天井にあたっていると処理をする
+	ceiling(info);
+	
+
+	// 地面との当たり判定
+	if (velocity_.y < 0) {
+		if (worldTransform_.translation_.y <= 2.0f) {
+			landing = true;
 		}
-		
-		//着地のフラグがtrue
-		if (landing==1)
-		{
-			worldTransform_.translation_.y = 2.0f;
-			velocity_.x *= (1.0f - kAttenuationLanding);
-			velocity_.y = 0.0f;
-			onGround_ = true;
-		}	
 	}
 
-	//移動量を加味して衝突判定
-	 CollisonMapInfo info;
-	 info.move = velocity_;
-	 mapCollision(info);
+	// 着地のフラグがtrue
+	if (landing == 1) {
+		worldTransform_.translation_.y = 2.0f;
+		velocity_.x *= (1.0f - kAttenuationLanding);
+		velocity_.y = 0.0f;
+		onGround_ = true;
+		
+	}
 
-	Reflection(info);
-
-	ceiling(info);
 	// 旋回制御
 	worldTransform_.translation_ += velocity_;
 
@@ -140,70 +134,69 @@ void Player::Update()
 	worldTransform_.UpdateMatrix();
 }
 
-void Player::Draw() 
-{ 
-	playerModel_->Draw(worldTransform_, *viewProjection_);
-
-}
+void Player::Draw() { playerModel_->Draw(worldTransform_, *viewProjection_); }
 
 WorldTransform& Player::GetWorldTransform() { return worldTransform_; }
 
 void Player::SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
-
-//マップとの衝突判定
-void Player::mapCollision(CollisonMapInfo& info) { 
+// マップとの衝突判定
+void Player::mapCollision(CollisonMapInfo& info) {
 	mapCollisionDetectionUp(&info);
-	//mapCollisionDetectionDown(&info);
-	//mapCollisionDetectionLeft(&info);
-	//mapCollisionDetectionRight(&info);
+	// mapCollisionDetectionDown(&info);
+	// mapCollisionDetectionLeft(&info);
+	// mapCollisionDetectionRight(&info);
 }
 
-//マップとの衝突判定の四方向
+// マップとの衝突判定の四方向
 void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
-	std::array<Vector3, 100> positionNew;
+	std::array<Vector3, kNumCorner> positionNew{};
 
 	if (info->move.y <= 0) {
 		return;
 	}
-	for (uint32_t i = 0; i < positionNew.size(); i++)
-	{
-		positionNew[i] = CornnerPosition(
-		    worldTransform_.translation_ + info->move, static_cast<Corner>(i));
+	for (uint32_t i = 0; i < positionNew.size(); i++) {
+		positionNew[i] =
+		    CornnerPosition(worldTransform_.translation_ + info->move, static_cast<Corner>(i));
 	}
-	
 
 	MapChipType mapChipType;
-	bool hit = false;
+	
 	IndexSet indexSet;
-	//左上の判定
+
+	bool hit = false;
+	// 左上の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftTop]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlock){
+	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
 	}
 	// 右上の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightTop]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType ::kBlank) {
+	if (mapChipType == MapChipType ::kBlock) {
 		hit = true;
 	}
-
-	if (hit == true){
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(info->move);
+	if (hit == true&&info->ceilingCollisionFlag==false) {
+		//IndexSet index;
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(
+		    positionNew[kLeftTop]);
 		
 		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-		info->move.y = std::max(0.0f, info->move.y);
-		info->wallContactFlag = true;
-	}
-
+		info->move.y = std::max(0.0f,info->move.y);
+		
+		//天井のフラグを立てている
+		info->ceilingCollisionFlag = true;
+		
+	} 
+	
 }
 
-//void Player::mapCollisionDetectionDown(CollisonMapInfo* collisonMapInfoDown) {}
+// void Player::mapCollisionDetectionDown(CollisonMapInfo* collisonMapInfoDown) {}
 //
-//void Player::mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft) {}
+// void Player::mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft) {}
 //
-//void Player::mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight) {}
+// void Player::mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight) {}
 
 Vector3 Player::CornnerPosition(const Vector3& center, Corner corner) {
 
@@ -213,17 +206,22 @@ Vector3 Player::CornnerPosition(const Vector3& center, Corner corner) {
 	    {+kWidth / 2.0f, +kHeight / 2.0f, 0}, //  kRightTop
 	    {-kWidth / 2.0f, +kHeight / 2.0f, 0}, //  kLeftTop
 	};
-	
+
 	return center + offsetTable[static_cast<uint32_t>(corner)];
 }
 
-void Player::Reflection(const CollisonMapInfo& info) { worldTransform_.translation_ += info.move; 
-}
+void Player::Reflection(const CollisonMapInfo& info) { worldTransform_.translation_ += info.move; }
 
-void Player::ceiling(const CollisonMapInfo& info) { 
-	if (info.ceilingCollisionFlag) {
-		DebugText::GetInstance()->ConsolePrintf("hit ceiling\n");
+void Player::ceiling(const CollisonMapInfo& info) {
+	if (info.ceilingCollisionFlag==true) {
+		DebugText::GetInstance()->ConsolePrintf("hit ceiling\n\n");
 		velocity_.y = 0;
+		onGround_ = false;
+		//if (onGround_ == false) {
+		//	velocity_ += Vector3(0, -kGravityAcceleration, 0);
+		//	velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
+		//}
+		
 	}
 	
 }
