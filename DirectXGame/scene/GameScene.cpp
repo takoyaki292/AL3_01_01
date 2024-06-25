@@ -70,11 +70,11 @@ void GameScene::Initialize() {
 	player_->SetMapChipField(mapChipField_);
 
 	///カメラコントロールの初期化
-	//cameraController_ = new CameraController();
-	//cameraController_->Initialize(&viewProjection_);
-	//cameraController_->SetTarget(player_);
-	//cameraController_->Reset();
-	//cameraController_->SetMovebleArea({ 0,500, 0,70});
+	cameraController_ = new CameraController();
+	cameraController_->Initialize(&viewProjection_);
+	cameraController_->SetTarget(player_);
+	cameraController_->Reset();
+	cameraController_->SetMovebleArea({ 0,500, 0,70});
 	
 }
 
@@ -97,7 +97,7 @@ void GameScene::Update()
 	}
 
 	player_->Update();
-	//cameraController_->Update();
+	cameraController_->Update();
 	
 	//	#ifdef _DEBUG
 //	if (input_->TriggerKey(DIK_BACK)) {

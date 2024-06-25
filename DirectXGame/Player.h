@@ -49,9 +49,13 @@ class Player
 	/// マップチップとの当たり判定情報
 	/// </summary>
 	struct  CollisonMapInfo {
+		//天井のフラグ
 		bool ceilingCollisionFlag=false;
+		//着地フラグ
 		bool landingFlag=false;
+		//壁接触フラグ
 		bool wallContactFlag=false;
+		//移動量
 		Vector3 move = {};
 	};
 
@@ -62,7 +66,7 @@ class Player
 	/// </summary>
 	/// <param name="collisonMapInfo"></param>
 	void mapCollisionDetectionUp(CollisonMapInfo* collisonMapInfoUp);
-	//void mapCollisionDetectionDown(CollisonMapInfo* collisonMapInfoDown);
+	void mapCollisionDetectionDown(CollisonMapInfo* collisonMapInfoDown);
 	//void mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft);
 	//void mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight);
 
@@ -93,7 +97,10 @@ class Player
 	/// </summary>
 	void ceiling(const CollisonMapInfo& info);
 
-	
+	/// <summary>
+	/// 着地状態の切り替えの処理
+	/// </summary>
+	void landing(const CollisonMapInfo& info);
 
 private:
 	WorldTransform worldTransform_;
@@ -117,9 +124,9 @@ private:
 
 	static inline const float kGravityAcceleration = 0.1f;
 	static inline const float kLimitFallSpeed = 1.0f;
-	static inline const float kJumpAcceleration = 1.0f;
+	static inline const float kJumpAcceleration = 1.2f;
 
-	static inline const float kAttenuationLanding = 1.0f;
+	//static inline const float kAttenuationLanding = 1.0f;
 	
 	static inline const float kBlack = 0.0f;
 	//bool upKey_ = false;
@@ -131,5 +138,8 @@ private:
 	// キャラクターの当たり判定のサイズ
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
+
+	//着磁の速度減少率
+	static inline const float kAttenuationLanding = 1.0f;
 };
 
