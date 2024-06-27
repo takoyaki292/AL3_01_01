@@ -234,8 +234,7 @@ void Player::landing(const CollisonMapInfo& info) {
 
 		} 
 		else{
-			//着地フラグをtrueにする
-			info.landingFlag= true;
+		
 		}
 	} 
 	//空中状態の処理
