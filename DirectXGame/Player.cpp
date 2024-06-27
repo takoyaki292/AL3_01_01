@@ -165,7 +165,7 @@ void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
 void Player::mapCollisionDetectionDown(CollisonMapInfo* info) {
 	std::array<Vector3, kNumCorner> positionNew{};
 
-	if (info->move.y > 0) {
+	if (info->move.y >= 0) {
 		return;
 	}
 	for (uint32_t i = 0; i < positionNew.size(); i++) {
@@ -181,13 +181,13 @@ void Player::mapCollisionDetectionDown(CollisonMapInfo* info) {
 	// 左下の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlank) {
+	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
 	}
 	// 右下の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType ::kBlank) {
+	if (mapChipType == MapChipType ::kBlock) {
 		hit = true;
 	}
 	if (hit == true && info->landingFlag== false) {
@@ -200,6 +200,10 @@ void Player::mapCollisionDetectionDown(CollisonMapInfo* info) {
 
 		//着地フラグをtrueにする
 		info->landingFlag = true;
+	}
+	else if (hit == false && info->landingFlag == true)
+	{
+		info->landingFlag = false;
 	}
 }
 //
@@ -269,16 +273,22 @@ void Player::landing(const CollisonMapInfo& info) {
 	else{
 		
 		if (info.landingFlag==true) {
-			worldTransform_.translation_.y = 2.0f;
+			DebugText::GetInstance()->ConsolePrintf("down ceiling\n\n");
+			//worldTransform_.translation_.y = 2.0f;
 			// 着地時にx速度を減衰
 			velocity_.x *= (1.0f - kAttenuationLanding);
 			// y速度をゼロにする
 			 velocity_.y = 0.0f;
 			//// 落下を止める
 			onGround_ = true;
-		} else {
-		
 		}
+		velocity_ += Vector3(0, -kGravityAcceleration, 0);
+		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
+
+		// else if (info.landingFlag == false) {
+		//		velocity_ += Vector3(0, -kGravityAcceleration, 0);
+		//		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
+		//}
 
 	}
 }
