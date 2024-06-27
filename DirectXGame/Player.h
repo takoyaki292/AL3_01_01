@@ -128,7 +128,7 @@ private:
 
 	//static inline const float kAttenuationLanding = 1.0f;
 	
-	static inline const float kBlack = 0.0f;
+	static inline const float kBlack = 1.0f;
 	//bool upKey_ = false;
 	
 

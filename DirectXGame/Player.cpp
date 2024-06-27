@@ -80,6 +80,8 @@ void Player::Update() {
 		// ジャンプの加速度
 		velocity_ += Vector3(0, kJumpAcceleration, 0);
 	}
+	
+	
 
 	// 移動量を加味して衝突判定
 	CollisonMapInfo info;
@@ -90,7 +92,7 @@ void Player::Update() {
 	Reflection(info);
 	// 天井にあたっていると処理をする
 	ceiling(info);
-
+	
 	//接地状態の切り替え
 	landing(info);
 
@@ -120,7 +122,7 @@ void Player::mapCollision(CollisonMapInfo& info) {
 void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
 	std::array<Vector3, kNumCorner> positionNew{};
 
-	if (info->move.y <= 0) {
+	if (info->move.y < 0) {
 		return;
 	}
 	for (uint32_t i = 0; i < positionNew.size(); i++) {
@@ -146,13 +148,13 @@ void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
 		hit = true;
 	}
 	if (hit == true&&info->ceilingCollisionFlag==false) {
-		//IndexSet index;
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(
 		    positionNew[kLeftTop]);
 		
+		float top = worldTransform_.translation_.y + kHeight;
 		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-		info->move.y = std::max(0.0f,info->move.y);
-		
+		info->move.y = std::max(0.0f, rect.bottom - top);
+			
 		//天井のフラグを立てている
 		info->ceilingCollisionFlag = true;
 		
@@ -163,7 +165,7 @@ void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
 void Player::mapCollisionDetectionDown(CollisonMapInfo* info) {
 	std::array<Vector3, kNumCorner> positionNew{};
 
-	if (info->move.y >= 0) {
+	if (info->move.y > 0) {
 		return;
 	}
 	for (uint32_t i = 0; i < positionNew.size(); i++) {
@@ -179,13 +181,13 @@ void Player::mapCollisionDetectionDown(CollisonMapInfo* info) {
 	// 左下の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlock) {
+	if (mapChipType == MapChipType::kBlank) {
 		hit = true;
 	}
 	// 右下の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType ::kBlock) {
+	if (mapChipType == MapChipType ::kBlank) {
 		hit = true;
 	}
 	if (hit == true && info->landingFlag== false) {
@@ -193,7 +195,8 @@ void Player::mapCollisionDetectionDown(CollisonMapInfo* info) {
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
 		//めり込む先のブロックの範囲矩形
 		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-		info->move.y = std::min(0.0f, info->move.y);
+		float bottom = worldTransform_.translation_.y - kHeight;
+		info->move.y = std::min(0.0f, rect.top+bottom);
 
 		//着地フラグをtrueにする
 		info->landingFlag = true;
@@ -228,19 +231,44 @@ void Player::ceiling(const CollisonMapInfo& info) {
 
 void Player::landing(const CollisonMapInfo& info) { 
 	//接地状態の処理
-	if (onGround_ == true) {
+	if (onGround_) {
 		if (velocity_.y > 0.0f) {
 			onGround_ = false;
-
 		} 
-		else{
-		
+		else {
+			std::array<Vector3, kNumCorner> positionNew{};
+			for (uint32_t i = 0; i < positionNew.size(); i++) {
+				positionNew[i] = CornnerPosition(
+				    worldTransform_.translation_ + info.move, static_cast<Corner>(i));
+			}
+			MapChipType mapChipType;
+
+			IndexSet indexSet;
+
+			bool hit = false;
+
+			// 左下の判定
+			indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftBottom]);
+			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+			if (mapChipType == MapChipType ::kBlank) {
+				hit = true;
+			}
+			// 右下の判定
+			indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
+			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+			if (mapChipType == MapChipType ::kBlank) {
+				hit = true;
+			}
+
+			if (!hit){
+				onGround_ = false;
+			}
 		}
 	} 
 	//空中状態の処理
-	else if(onGround_==false){
+	else{
 		
-		if (info.landingFlag== true) {
+		if (info.landingFlag==true) {
 			worldTransform_.translation_.y = 2.0f;
 			// 着地時にx速度を減衰
 			velocity_.x *= (1.0f - kAttenuationLanding);
@@ -248,38 +276,9 @@ void Player::landing(const CollisonMapInfo& info) {
 			 velocity_.y = 0.0f;
 			//// 落下を止める
 			onGround_ = true;
+		} else {
+		
 		}
-	}
 
-
-	std::array<Vector3, kNumCorner> positionNew{};
-	for (uint32_t i = 0; i < positionNew.size(); i++) {
-		positionNew[i] =
-		    CornnerPosition(worldTransform_.translation_ + info.move, static_cast<Corner>(i));
-	}
-	MapChipType mapChipType;
-	
-	IndexSet indexSet;
-	
-	bool hit = false;
-	
-	// 左下の判定
-	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftBottom]);
-	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType::kBlank) {
-		hit = true;
-	}
-	// 右下の判定
-	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
-	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-	if (mapChipType == MapChipType ::kBlank) {
-		hit = true;
-	}
-	
-	//positionNew[kLeftBottom] + Vector3(0, -0.5, 0);
-	//positionNew[kRightBottom] + Vector3(0, -0.5, 0);
-	
-	if (!hit) {
-		onGround_ = false;
 	}
 }
