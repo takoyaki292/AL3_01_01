@@ -6,8 +6,8 @@
 
 enum  class MapChipType 
 {
-	kBlank,
-	kBlock
+	kBlank,//空白
+	kBlock//ブロック
 };
 
 struct  MapChipData 
@@ -60,7 +60,7 @@ private:
 
 	static inline const uint32_t kNumBlockVirtical = 30;
 	static inline const uint32_t kNumBlockHorizontal = 100;
-	static inline const uint32_t kNumPlayerHeight = 100;
+	//static inline const uint32_t kNumPlayerHeight = 100;
 
 	MapChipData mapChipData_;
 

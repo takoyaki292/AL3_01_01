@@ -59,7 +59,7 @@ MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t yIndex
 	if (xIndex < 0 || kNumBlockHorizontal - 1 < xIndex) {
 		return MapChipType::kBlank;
 	}
-	if (yIndex < 0 || kNumBlockVirtical - 1 < yIndex) {
+	if (yIndex < 0 || kNumBlockVirtical-1 < yIndex) {
 		return MapChipType::kBlank;
 	}
 	return mapChipData_.data[yIndex][xIndex];
@@ -78,7 +78,7 @@ IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3& position) {
 	indexSet.xIndex = ((uint32_t)position.x + (uint32_t)kBlockWidth / 2) / (uint32_t)kBlockWidth;
 	tempIndex.yIndex = ((uint32_t)position.y + (uint32_t)kBlockHeight / 2) / (uint32_t)kBlockHeight;
 	indexSet.yIndex =
-	    (kNumBlockVirtical - tempIndex.yIndex) - (uint32_t)kBlockHeight;
+	    kNumBlockVirtical -1- tempIndex.yIndex;
 	
 	return indexSet;
 }
@@ -102,6 +102,5 @@ Vector3 MapChipField::GetMapChipPositionByPlayerIndex(uint32_t xIndex, uint32_t 
 }
 uint32_t MapChipField::GetNumBlockVirtical() { return kNumBlockVirtical; }
 uint32_t MapChipField::GetNumBlockHorizontal() { return kNumBlockHorizontal; }
-uint32_t MapChipField::GetNumPlayerHorizontal() { return kNumPlayerHeight; }
 
 

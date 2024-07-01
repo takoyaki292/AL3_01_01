@@ -136,8 +136,8 @@ private:
 
 
 	// キャラクターの当たり判定のサイズ
-	static inline const float kWidth = 0.8f;
-	static inline const float kHeight = 0.8f;
+	static inline const float kWidth = 1.6f;
+	static inline const float kHeight = 1.6f;
 
 	//着磁の速度減少率
 	static inline const float kAttenuationLanding = 1.0f;

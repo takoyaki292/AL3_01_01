@@ -24,8 +24,8 @@ void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vecto
 
 	viewProjection_ = viewProjection;
 	playerModel_ = model;
-
 	
+		
 }
 
 void Player::Update() {
@@ -81,8 +81,6 @@ void Player::Update() {
 		velocity_ += Vector3(0, kJumpAcceleration, 0);
 	}
 	
-	
-
 	// 移動量を加味して衝突判定
 	CollisonMapInfo info;
 	info.move = velocity_;
@@ -90,11 +88,18 @@ void Player::Update() {
 
 	// 反映する処理
 	Reflection(info);
+	if (!info.landingFlag)
+	{
 	// 天井にあたっていると処理をする
 	ceiling(info);
+
+	}
+	
+	if (!info.ceilingCollisionFlag) {
 	
 	//接地状態の切り替え
 	landing(info);
+	}
 
 	// 旋回制御
 	worldTransform_.translation_ += velocity_;
@@ -151,7 +156,7 @@ void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(
 		    positionNew[kLeftTop]);
 		
-		float top = worldTransform_.translation_.y + kHeight;
+		float top=worldTransform_.translation_.y + kHeight / 2;
 		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 		info->move.y = std::max(0.0f, rect.bottom - top);
 			
@@ -165,7 +170,7 @@ void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
 void Player::mapCollisionDetectionDown(CollisonMapInfo* info) {
 	std::array<Vector3, kNumCorner> positionNew{};
 
-	if (info->move.y >= 0) {
+	if (info->move.y > 0) {
 		return;
 	}
 	for (uint32_t i = 0; i < positionNew.size(); i++) {
@@ -192,19 +197,19 @@ void Player::mapCollisionDetectionDown(CollisonMapInfo* info) {
 	}
 	if (hit == true && info->landingFlag== false) {
 		//めり込まないように移動量を設定する
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftBottom]);
 		//めり込む先のブロックの範囲矩形
+		float bottom = worldTransform_.translation_.y - kHeight/2;
 		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-		float bottom = worldTransform_.translation_.y - kHeight;
-		info->move.y = std::min(0.0f, rect.top+bottom);
+		info->move.y = std::min(0.0f, rect.top-bottom);
 
 		//着地フラグをtrueにする
 		info->landingFlag = true;
-	}
-	else if (hit == false && info->landingFlag == true)
-	{
-		info->landingFlag = false;
-	}
+	} 
+	//else {
+	//	onGround_ = false;
+	//}
+	
 }
 //
 // void Player::mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft) {}
@@ -229,13 +234,16 @@ void Player::ceiling(const CollisonMapInfo& info) {
 	if (info.ceilingCollisionFlag==true) {
 		DebugText::GetInstance()->ConsolePrintf("hit ceiling\n\n");
 		velocity_.y = 0;
-		onGround_ = false;
-	}
+		//onGround_ = false;
+	} 
+	//else {
+	//	onGround_ = true;	
+	//}
 }
 
 void Player::landing(const CollisonMapInfo& info) { 
 	//接地状態の処理
-	if (onGround_) {
+	if (onGround_==true) {
 		if (velocity_.y > 0.0f) {
 			onGround_ = false;
 		} 
@@ -254,41 +262,40 @@ void Player::landing(const CollisonMapInfo& info) {
 			// 左下の判定
 			indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftBottom]);
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-			if (mapChipType == MapChipType ::kBlank) {
+			if (mapChipType == MapChipType ::kBlock) {
 				hit = true;
 			}
 			// 右下の判定
 			indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-			if (mapChipType == MapChipType ::kBlank) {
+			if (mapChipType == MapChipType ::kBlock) {
 				hit = true;
 			}
 
 			if (!hit){
 				onGround_ = false;
 			}
+
 		}
 	} 
 	//空中状態の処理
-	else{
+	else if (onGround_ == false) {
 		
 		if (info.landingFlag==true) {
 			DebugText::GetInstance()->ConsolePrintf("down ceiling\n\n");
 			//worldTransform_.translation_.y = 2.0f;
+			 //// 落下を止める
+			 onGround_ = true;
 			// 着地時にx速度を減衰
 			velocity_.x *= (1.0f - kAttenuationLanding);
 			// y速度をゼロにする
 			 velocity_.y = 0.0f;
-			//// 落下を止める
-			onGround_ = true;
+			 
+		} 
+		else{
+			velocity_ += Vector3(0, -kGravityAcceleration, 0);
+			velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
 		}
-		velocity_ += Vector3(0, -kGravityAcceleration, 0);
-		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
-
-		// else if (info.landingFlag == false) {
-		//		velocity_ += Vector3(0, -kGravityAcceleration, 0);
-		//		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
-		//}
 
 	}
 }
