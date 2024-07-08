@@ -36,6 +36,7 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete player_;
 	delete cameraController_;
+	delete enemy_;
 }
 
 void GameScene::Initialize() {
@@ -113,7 +114,7 @@ void GameScene::Update()
 	enemy_->Update();
 	//cameraController_->Update();
 	
-		#ifdef _DEBUG
+	#ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {
 		isDebugCameraActive_ = true;
 	}

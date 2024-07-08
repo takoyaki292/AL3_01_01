@@ -65,7 +65,6 @@ void Player::Update() {
 		float destinationRotationYTable[] = {
 		    std::numbers::pi_v<float> / 2.0f, 
 			std::numbers::pi_v<float> * 3.0f / 2.0f};
-
 		//float rate = 1 - turnTimer_ / kTimeTurn;
 		//float ease = easeInOutSine(rate);
 		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
@@ -140,8 +139,8 @@ void Player::mapCollisionDetectionRight(CollisonMapInfo* info) {
 	IndexSet indexSet;
 
 	bool hit = false;
-	positionNew[kRightTop] += Vector3(kGaq, 0, 0);
-	positionNew[kRightBottom] += Vector3(kGaq, 0, 0);
+	positionNew[kRightTop] -= Vector3(-kGaq, 0, 0);
+	positionNew[kRightBottom] -= Vector3(-kGaq, 0, 0);
 	// 右下の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
