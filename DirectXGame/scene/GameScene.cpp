@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "Player.h"
+#include "Enemy.h"
 #include "CameraController.h"
 
 
@@ -76,6 +77,18 @@ void GameScene::Initialize() {
 	cameraController_->Reset();
 	cameraController_->SetMovebleArea({ 0,500, 0,70});
 	
+
+	//敵の描画
+	enemy_ = new Enemy();
+	// Vector3型でポジションを初期化する
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByPlayerIndex(
+	    mapChipField_->GetNumBlockHorizontal(), mapChipField_->GetNumBlockVirtical());
+	// モデルプレイヤーの読み込む
+	modelEnemy_ = Model::CreateFromOBJ("playerModel", true);
+	// プレイヤーの初期化
+	enemy_->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
+
+	enemy_->SetMapChipField(mapChipField_);
 }
 
 
@@ -97,6 +110,7 @@ void GameScene::Update()
 	}
 
 	player_->Update();
+	enemy_->Update();
 	cameraController_->Update();
 	
 		#ifdef _DEBUG
@@ -147,6 +161,7 @@ void GameScene::Draw() {
 	/// </summary>
 
 	player_->Draw();
+	enemy_->Draw();
 	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {

@@ -12,6 +12,7 @@
 #include "DebugCamera.h"
 #include "Player.h"
 #include "CameraController.h"
+#include "Enemy.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -53,7 +54,7 @@ private: // メンバ変数
 	// モデル
 	Model* modelBlock_ = nullptr;
 	Model* modelPlayer_ = nullptr;
-	
+	Model* modelEnemy_ = nullptr;
 
 	bool isDebugCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
@@ -65,8 +66,9 @@ private: // メンバ変数
 	MapChipField* mapChipField_;
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 	Player* player_ = nullptr;
-	
 	CameraController* cameraController_ = nullptr;
+
+	Enemy* enemy_ = nullptr;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
