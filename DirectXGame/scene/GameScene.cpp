@@ -111,7 +111,7 @@ void GameScene::Update()
 
 	player_->Update();
 	enemy_->Update();
-	cameraController_->Update();
+	//cameraController_->Update();
 	
 		#ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {

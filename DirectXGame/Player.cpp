@@ -80,7 +80,7 @@ void Player::Update() {
 		velocity_ += Vector3(0, kJumpAcceleration, 0);
 	}
 	
-	// 移動量を加味して衝突判定
+	//// 移動量を加味して衝突判定
 	CollisonMapInfo info;
 	info.move = velocity_;
 	mapCollision(info);
@@ -140,8 +140,8 @@ void Player::mapCollisionDetectionRight(CollisonMapInfo* info) {
 	IndexSet indexSet;
 
 	bool hit = false;
-	positionNew[kRightTop] -= Vector3(-kGaq, 0, 0);
-	positionNew[kRightBottom] -= Vector3(-kGaq, 0, 0);
+	positionNew[kRightTop] += Vector3(kGaq, 0, 0);
+	positionNew[kRightBottom] += Vector3(kGaq, 0, 0);
 	// 右下の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
@@ -155,8 +155,7 @@ void Player::mapCollisionDetectionRight(CollisonMapInfo* info) {
 		hit = true;
 	}
 	if (hit == true) {
-		//float right = worldTransform_.translation_.x - kWidth / 2+kGaq;
-		float right = worldTransform_.translation_.x - kWidth / 2;
+		float right = worldTransform_.translation_.x - kWidth / 2 - kGaq;
 		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 		info->move.x = std::min(0.0f, rect.left - right);
 		// 壁のフラグを立てている
@@ -181,8 +180,8 @@ void Player::mapCollisionDetectionLeft(CollisonMapInfo* info) {
 	IndexSet indexSet;
 
 	bool hit = false;
-	positionNew[kLeftTop] += Vector3(-kGaq,0, 0);
-	positionNew[kLeftBottom] += Vector3(-kGaq,0, 0);
+	positionNew[kLeftTop] += Vector3(-kGaq, 0, 0);
+	positionNew[kLeftBottom] += Vector3(-kGaq, 0, 0);
 	// 左上の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftTop]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
@@ -201,7 +200,7 @@ void Player::mapCollisionDetectionLeft(CollisonMapInfo* info) {
 		info->move.x = std::max(0.0f, rect.right-left);
 		// 壁のフラグを立てている
 		info->wallContactFlag = true;
-	} 
+	}
  }
 //上方向の当たり判定
 void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
@@ -384,10 +383,6 @@ void Player::wallContact(const CollisonMapInfo& info) {
 	}
 
 }
-
-//float Player::easeInOutSine(float num) { 
-//	return -(cos((float)M_PI*num)-1)/2; }
-
 float Player::easeInOut(float x1, float x2, float t) {
 	float a = -(std::cosf(std::numbers::pi_v<float> * t) - 1.0f) / 2.0f;
 	return Lerp(x1, x2, a);

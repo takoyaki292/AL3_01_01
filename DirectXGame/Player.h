@@ -131,7 +131,7 @@ class Player
 
 	static inline const float kGravityAcceleration = 0.1f;
 	static inline const float kLimitFallSpeed = 0.5f;
-	static inline const float kJumpAcceleration = 1.2f;
+	static inline const float kJumpAcceleration = 0.7f;
 	
 	static inline const float kBlack = 1.0f;
 
@@ -147,7 +147,7 @@ class Player
 	static inline const float kAttenuationLanding = 0.1f;
 
 	//マップチップとの隙間
-	static inline const float kGaq = 0.6f;
+	static inline const float kGaq = 0.5f;
 
 	//着磁の速度減衰率
 	static inline const float kAtteuationWall = 0.5f;
