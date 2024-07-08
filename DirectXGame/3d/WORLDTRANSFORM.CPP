@@ -80,7 +80,14 @@ Matrix4x4 WorldTransform::MakeAffineMatrix(
 	    0,0,0,1
 	};
 
-	Matrix4x4 t{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, translate.x, translate.y, translate.z, 1};
+	Matrix4x4 t=
+	{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		translate.x, translate.y, translate.z, 1
+	};
+	
 	Matrix4x4 a = {};
 	a = Mu(rotateX, Mu(rotateY, rotateZ));
 	return Mu(s, Mu(a, t));

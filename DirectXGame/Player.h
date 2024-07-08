@@ -67,8 +67,8 @@ class Player
 	/// <param name="collisonMapInfo"></param>
 	void mapCollisionDetectionUp(CollisonMapInfo* collisonMapInfoUp);
 	void mapCollisionDetectionDown(CollisonMapInfo* collisonMapInfoDown);
-	//void mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft);
-	//void mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight);
+	void mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft);
+	void mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight);
 
 	//四つの核の座標計算
 	//右下、左下、右上、左上
@@ -102,7 +102,15 @@ class Player
 	/// </summary>
 	void landing(const CollisonMapInfo& info);
 
-private:
+	/// <summary>
+	/// 壁に接触している場合の処理
+	/// </summary>
+	void wallContact(const CollisonMapInfo& info);
+
+	//float easeInOutSine(float num);
+	float easeInOut(float x1, float x2, float t);
+	float Lerp(float x1, float x2, float t);
+ private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;
 	LRDirection lrDirection_ = LRDirection::kRight;
@@ -123,14 +131,10 @@ private:
 	bool onGround_ = true;
 
 	static inline const float kGravityAcceleration = 0.1f;
-	static inline const float kLimitFallSpeed = 1.0f;
+	static inline const float kLimitFallSpeed = 0.5f;
 	static inline const float kJumpAcceleration = 1.2f;
-
-	//static inline const float kAttenuationLanding = 1.0f;
 	
 	static inline const float kBlack = 1.0f;
-	//bool upKey_ = false;
-	
 
 	MapChipField* mapChipField_ = nullptr;
 
@@ -139,7 +143,14 @@ private:
 	static inline const float kWidth = 1.6f;
 	static inline const float kHeight = 1.6f;
 
+
 	//着磁の速度減少率
-	static inline const float kAttenuationLanding = 1.0f;
+	static inline const float kAttenuationLanding = 0.1f;
+
+	//マップチップとの隙間
+	static inline const float kGaq = 0.6f;
+
+	//着磁の速度減衰率
+	static inline const float kAtteuationWall = 0.5f;
 };
 

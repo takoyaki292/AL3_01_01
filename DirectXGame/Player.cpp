@@ -5,21 +5,21 @@
 #include <model.h>
 #include "Model.h"
 #include "string.h"
-#include<string>
-#include <imgui.h>
 #include <algorithm>
 #include "MapChipField.h"
 #include <cassert>
 #include <functional>
 #include "ImGuiManager.h"
 #include "DebugText.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <Input.h>
 void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vector3& position)
 {
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	worldTransform_.translation_.y = 2.0f;
 	worldTransform_.translation_.x = 2.0f;
-
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 
 	viewProjection_ = viewProjection;
@@ -41,8 +41,8 @@ void Player::Update() {
 			// 向かう方向に変わる
 			if (lrDirection_ != LRDirection::kRight) {
 				lrDirection_ = LRDirection::kRight;
-				turnFirstRotationY_ = -1.0f;
-				turnTimer_ = 3.0f;
+				turnFirstRotationY_ =-worldTransform_.rotation_.y;
+				turnTimer_ = kTimeTurn;
 			}
 		} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
 			if (velocity_.x > 0.0f) {
@@ -52,28 +52,27 @@ void Player::Update() {
 			// 向かう方向に変わる
 			if (lrDirection_ != LRDirection::kLeft) {
 				lrDirection_ = LRDirection::kLeft;
-				turnFirstRotationY_ = 1.0f;
-				turnTimer_ = 3.0f;
+				turnFirstRotationY_ = worldTransform_.rotation_.y;
+				turnTimer_ = kTimeTurn;
 			}
 		} else {
 			velocity_.x += (1.0f - kAttenuation);
 		}
-
 		velocity_ += acceleration;
-		// velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
-
-		if (turnTimer_ > 0.0f) {
-			turnTimer_ = 60.0f / 1.0f;
-			float destinationRotationYTable[] = {
-			    std::numbers::pi_v<float> / 2.0f, std::numbers::pi_v<float> * 3.0f / 2.0f};
-
-			// float destinationRotationY =
-			//     destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
-
-			worldTransform_.rotation_.y = sin((turnFirstRotationY_ * turnTimer_) / 2);
-		}
 	}
+	if (turnTimer_ > 0.0f) {
+		turnTimer_ -= 1.0f / 60.0f;
+		float destinationRotationYTable[] = {
+		    std::numbers::pi_v<float> / 2.0f, 
+			std::numbers::pi_v<float> * 3.0f / 2.0f};
 
+		//float rate = 1 - turnTimer_ / kTimeTurn;
+		//float ease = easeInOutSine(rate);
+		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
+		worldTransform_.rotation_.y =
+		    easeInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTurn);
+
+	}
 	// 上キー押していたら
 	if (Input::GetInstance()->TriggerKey(DIK_UP)) {
 
@@ -90,15 +89,15 @@ void Player::Update() {
 	Reflection(info);
 	if (!info.landingFlag)
 	{
-	// 天井にあたっていると処理をする
-	ceiling(info);
-
+		// 天井にあたっていると処理をする
+		ceiling(info);
 	}
-	
+	// 壁に接触している場合の処理
+	wallContact(info);
+
 	if (!info.ceilingCollisionFlag) {
-	
-	//接地状態の切り替え
-	landing(info);
+		//接地状態の切り替え
+		landing(info);
 	}
 
 	// 旋回制御
@@ -116,18 +115,99 @@ void Player::SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapCh
 
 // マップとの衝突判定
 void Player::mapCollision(CollisonMapInfo& info) {
+	mapCollisionDetectionLeft(&info);
+	mapCollisionDetectionRight(&info);
 	mapCollisionDetectionUp(&info);
 	mapCollisionDetectionDown(&info);
-	// mapCollisionDetectionLeft(&info);
-	// mapCollisionDetectionRight(&info);
 }
 
 // マップとの衝突判定の四方向
+// 右方向の当たり判定
+void Player::mapCollisionDetectionRight(CollisonMapInfo* info) {
+
+	std::array<Vector3, kNumCorner> positionNew{};
+
+	if (info->move.x <= 0) {
+		return;
+	}
+	for (uint32_t i = 0; i < positionNew.size(); i++) {
+		positionNew[i] =
+		    CornnerPosition(worldTransform_.translation_ + info->move, static_cast<Corner>(i));
+	}
+
+	MapChipType mapChipType;
+
+	IndexSet indexSet;
+
+	bool hit = false;
+	positionNew[kRightTop] -= Vector3(-kGaq, 0, 0);
+	positionNew[kRightBottom] -= Vector3(-kGaq, 0, 0);
+	// 右下の判定
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType::kBlock) {
+		hit = true;
+	}
+	// 右上の判定
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightTop]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType ::kBlock) {
+		hit = true;
+	}
+	if (hit == true) {
+		//float right = worldTransform_.translation_.x - kWidth / 2+kGaq;
+		float right = worldTransform_.translation_.x - kWidth / 2;
+		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		info->move.x = std::min(0.0f, rect.left - right);
+		// 壁のフラグを立てている
+		info->wallContactFlag = true;
+	}
+}
+ //左方向の当たり判定
+void Player::mapCollisionDetectionLeft(CollisonMapInfo* info) {
+	
+	std::array<Vector3, kNumCorner> positionNew{};
+
+	if (info->move.x  >= 0) {
+		return;
+	}
+	for (uint32_t i = 0; i < positionNew.size(); i++) {
+		positionNew[i] =
+		    CornnerPosition(worldTransform_.translation_ + info->move, static_cast<Corner>(i));
+	}
+
+	MapChipType mapChipType;
+
+	IndexSet indexSet;
+
+	bool hit = false;
+	positionNew[kLeftTop] += Vector3(-kGaq,0, 0);
+	positionNew[kLeftBottom] += Vector3(-kGaq,0, 0);
+	// 左上の判定
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftTop]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType::kBlock) {
+		hit = true;
+	}
+	// 左下の判定
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftBottom]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType ::kBlock) {
+		hit = true;
+	}
+	if (hit == true && info->wallContactFlag== false) {
+		float left = worldTransform_.translation_.x - kWidth / 2;
+		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		info->move.x = std::max(0.0f, rect.right-left);
+		// 壁のフラグを立てている
+		info->wallContactFlag = true;
+	} 
+ }
 //上方向の当たり判定
 void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
 	std::array<Vector3, kNumCorner> positionNew{};
 
-	if (info->move.y < 0) {
+	if (info->move.y <= 0) {
 		return;
 	}
 	for (uint32_t i = 0; i < positionNew.size(); i++) {
@@ -140,6 +220,9 @@ void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
 	IndexSet indexSet;
 
 	bool hit = false;
+
+	positionNew[kLeftTop] += Vector3(0, kGaq, 0);
+	positionNew[kRightTop] += Vector3(0, kGaq, 0);
 	// 左上の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftTop]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
@@ -156,10 +239,10 @@ void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(
 		    positionNew[kLeftTop]);
 		
-		float top=worldTransform_.translation_.y + kHeight / 2;
+		float top = kGaq+worldTransform_.translation_.y + kHeight / 2;
 		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 		info->move.y = std::max(0.0f, rect.bottom - top);
-			
+		
 		//天井のフラグを立てている
 		info->ceilingCollisionFlag = true;
 		
@@ -170,7 +253,7 @@ void Player::mapCollisionDetectionUp(CollisonMapInfo* info) {
 void Player::mapCollisionDetectionDown(CollisonMapInfo* info) {
 	std::array<Vector3, kNumCorner> positionNew{};
 
-	if (info->move.y > 0) {
+	if (info->move.y >= 0) {
 		return;
 	}
 	for (uint32_t i = 0; i < positionNew.size(); i++) {
@@ -183,6 +266,8 @@ void Player::mapCollisionDetectionDown(CollisonMapInfo* info) {
 	IndexSet indexSet;
 
 	bool hit = false;
+	positionNew[kLeftTop] += Vector3(0, -kGaq, 0);
+	positionNew[kRightTop] += Vector3(0, -kGaq, 0);
 	// 左下の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
@@ -199,22 +284,15 @@ void Player::mapCollisionDetectionDown(CollisonMapInfo* info) {
 		//めり込まないように移動量を設定する
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftBottom]);
 		//めり込む先のブロックの範囲矩形
-		float bottom = worldTransform_.translation_.y - kHeight/2;
+		float bottom = worldTransform_.translation_.y  -kHeight / 2-0.2f;
 		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-		info->move.y = std::min(0.0f, rect.top-bottom);
+		info->move.y = std::max(0.0f, rect.top-bottom);
 
 		//着地フラグをtrueにする
 		info->landingFlag = true;
 	} 
-	//else {
-	//	onGround_ = false;
-	//}
-	
 }
-//
-// void Player::mapCollisionDetectionLeft(CollisonMapInfo* collisonMapInfoLeft) {}
-//
-// void Player::mapCollisionDetectionRight(CollisonMapInfo* collisonMapInfoRight) {}
+
 
 Vector3 Player::CornnerPosition(const Vector3& center, Corner corner) {
 
@@ -234,11 +312,7 @@ void Player::ceiling(const CollisonMapInfo& info) {
 	if (info.ceilingCollisionFlag==true) {
 		DebugText::GetInstance()->ConsolePrintf("hit ceiling\n\n");
 		velocity_.y = 0;
-		//onGround_ = false;
 	} 
-	//else {
-	//	onGround_ = true;	
-	//}
 }
 
 void Player::landing(const CollisonMapInfo& info) { 
@@ -260,18 +334,20 @@ void Player::landing(const CollisonMapInfo& info) {
 			bool hit = false;
 
 			// 左下の判定
-			indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftBottom]);
+			indexSet = mapChipField_->GetMapChipIndexSetByPosition(
+			    positionNew[kLeftBottom] + Vector3(0, -kGaq, 0));
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+
 			if (mapChipType == MapChipType ::kBlock) {
 				hit = true;
 			}
 			// 右下の判定
-			indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
+			indexSet = mapChipField_->GetMapChipIndexSetByPosition(
+			    positionNew[kRightBottom] + Vector3(0, -kGaq, 0));
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 			if (mapChipType == MapChipType ::kBlock) {
 				hit = true;
 			}
-
 			if (!hit){
 				onGround_ = false;
 			}
@@ -299,3 +375,21 @@ void Player::landing(const CollisonMapInfo& info) {
 
 	}
 }
+
+void Player::wallContact(const CollisonMapInfo& info) { 
+	if (info.wallContactFlag == true){
+		DebugText::GetInstance()->ConsolePrintf("wall ceiling\n\n");
+
+		velocity_.x *= (1.0f - kAtteuationWall);
+	}
+
+}
+
+//float Player::easeInOutSine(float num) { 
+//	return -(cos((float)M_PI*num)-1)/2; }
+
+float Player::easeInOut(float x1, float x2, float t) {
+	float a = -(std::cosf(std::numbers::pi_v<float> * t) - 1.0f) / 2.0f;
+	return Lerp(x1, x2, a);
+}
+float Player::Lerp(float x1, float x2, float t) { return (1.0f - t) * x1 + t * x2; }

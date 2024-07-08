@@ -99,24 +99,24 @@ void GameScene::Update()
 	player_->Update();
 	cameraController_->Update();
 	
-	//	#ifdef _DEBUG
-//	if (input_->TriggerKey(DIK_BACK)) {
-//		isDebugCameraActive_ = true;
-//	}
-//	//if (input_->TriggerKey(DIK_O))
-//	//{
-//	//	player_->Update();
-//	//}
-//#endif // DEBUG
-//	debugCamera_->Update();
-//	if (isDebugCameraActive_) {
-//		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-//		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-//		viewProjection_.TransferMatrix();
-//	} else {
-//		viewProjection_.UpdateMatrix();
-//	}
-//	
+		#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_BACK)) {
+		isDebugCameraActive_ = true;
+	}
+	//if (input_->TriggerKey(DIK_O))
+	//{
+	//	player_->Update();
+	//}
+#endif // DEBUG
+	debugCamera_->Update();
+	if (isDebugCameraActive_) {
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+	}
+	
 }
 
 void GameScene::Draw() {
