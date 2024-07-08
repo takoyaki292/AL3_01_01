@@ -36,6 +36,11 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete player_;
 	delete cameraController_;
+	//delete enemy_;
+	for (uint32_t i = 0; i < 3; i++)
+	{
+		delete& enemies_;
+	}
 }
 
 void GameScene::Initialize() {
@@ -78,17 +83,15 @@ void GameScene::Initialize() {
 	cameraController_->SetMovebleArea({ 0,500, 0,70});
 	
 
-	//敵の描画
-	enemy_ = new Enemy();
-	// Vector3型でポジションを初期化する
-	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByPlayerIndex(
-	    mapChipField_->GetNumBlockHorizontal(), mapChipField_->GetNumBlockVirtical());
-	// モデルプレイヤーの読み込む
-	modelEnemy_ = Model::CreateFromOBJ("playerModel", true);
-	// プレイヤーの初期化
-	enemy_->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
+	
 
-	enemy_->SetMapChipField(mapChipField_);
+	for (uint32_t i = 0; i < 3; i++){
+		Enemy* newEnemy = new Enemy();
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByPlayerIndex(
+		    mapChipField_->GetNumBlockHorizontal(), mapChipField_->GetNumBlockVirtical());
+		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
+		enemies_.push_back(newEnemy);
+	}
 }
 
 
@@ -110,10 +113,13 @@ void GameScene::Update()
 	}
 
 	player_->Update();
-	enemy_->Update();
+	//enemy_->Update();
+	//for (uint32_t i = 0; i < 3; i++) {
+	//	newEnemy->Update();
+	//}
 	cameraController_->Update();
 	
-		#ifdef _DEBUG
+	#ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {
 		isDebugCameraActive_ = true;
 	}
@@ -161,7 +167,10 @@ void GameScene::Draw() {
 	/// </summary>
 
 	player_->Draw();
-	enemy_->Draw();
+	//enemy_->Draw();
+	//for (uint32_t i = 0; i < 3; i++) {
+	//	newEnemy->Draw();
+	//}
 	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {

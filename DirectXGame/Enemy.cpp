@@ -31,7 +31,6 @@ void Enemy::Update() {
 
 void Enemy::Draw() { 
 	enemyModel_->Draw(worldTransform_, *viewProjection_);
-
 }
 
 void Enemy::SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
