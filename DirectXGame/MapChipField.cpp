@@ -100,6 +100,11 @@ Vector3 MapChipField::GetMapChipPositionByPlayerIndex(uint32_t xIndex, uint32_t 
 	Vector3 a = {(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVirtical - 1 - yIndex), 0)};
 	return a;
 }
+Vector3 MapChipField::GetMapChipPositionByEnemyIndex(uint32_t xIndex, uint32_t yIndex) {
+
+	Vector3 a = {(kBlockWidth * xIndex, kBlockHeight* (kNumBlockVirtical - 1 - yIndex), 0)};
+	return a;
+}
 uint32_t MapChipField::GetNumBlockVirtical() { return kNumBlockVirtical; }
 uint32_t MapChipField::GetNumBlockHorizontal() { return kNumBlockHorizontal; }
 

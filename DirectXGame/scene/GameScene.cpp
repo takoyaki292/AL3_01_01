@@ -1,21 +1,17 @@
 #include "GameScene.h"
+#include "CameraController.h"
+#include "Enemy.h"
+#include "Player.h"
 #include "TextureManager.h"
 #include <cassert>
-#include "Player.h"
-#include "Enemy.h"
-#include "CameraController.h"
-
 
 GameScene::GameScene() {}
 
 void GameScene::GenerateBlocks() {
 	uint32_t numBlockVirtical = mapChipField_->GetNumBlockVirtical();
 	uint32_t numBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
-
-	// numBlockVirtical = 20;
-	// numBlockHorizontal = 100;
 	worldTransformBlocks_.resize(numBlockVirtical);
-	
+
 	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
 		worldTransformBlocks_[i].resize(numBlockHorizontal);
 		for (uint32_t j = 0; j < numBlockHorizontal; ++j) {
@@ -30,16 +26,15 @@ void GameScene::GenerateBlocks() {
 	}
 }
 
-
 GameScene::~GameScene() {
 	delete mapChipField_;
 	delete debugCamera_;
 	delete player_;
 	delete cameraController_;
-	//delete enemy_;
-	for (uint32_t i = 0; i < 3; i++)
-	{
-		delete& enemies_;
+	// delete enemy_;
+	for (Enemy* kEnemy : enemies_) {
+		delete kEnemy;
+		// delete newEnemy;
 	}
 }
 
@@ -52,54 +47,45 @@ void GameScene::Initialize() {
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 
-	
 	debugCamera_ = new DebugCamera(1280, 720);
 
 	viewProjection_.Initialize();
-	
+
 	GenerateBlocks();
 
 	modelBlock_ = Model::Create();
 
 	playerWorldTransform_.Initialize();
 
-	
 	player_ = new Player();
-	//Vector3型でポジションを初期化する
+	// Vector3型でポジションを初期化する
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByPlayerIndex(
-	    mapChipField_->GetNumBlockHorizontal(),mapChipField_->GetNumBlockVirtical());	
-	//モデルプレイヤーの読み込む
+	    mapChipField_->GetNumBlockHorizontal(), mapChipField_->GetNumBlockVirtical());
+	// モデルプレイヤーの読み込む
 	modelPlayer_ = Model::CreateFromOBJ("playerModel", true);
-	//プレイヤーの初期化
+	// プレイヤーの初期化
 	player_->Initalize(modelPlayer_, &viewProjection_, playerPosition);
 
 	player_->SetMapChipField(mapChipField_);
 
-	///カメラコントロールの初期化
+	/// カメラコントロールの初期化
 	cameraController_ = new CameraController();
 	cameraController_->Initialize(&viewProjection_);
 	cameraController_->SetTarget(player_);
 	cameraController_->Reset();
-	cameraController_->SetMovebleArea({ 0,500, 0,70});
-	
+	cameraController_->SetMovebleArea({0, 500, 0, 70});
 
-	
-
-	for (uint32_t i = 0; i < 3; i++){
+	modelEnemy_ = Model::CreateFromOBJ("playerModel", true);
+	for (uint32_t i = 0; i < 1; ++i) {
 		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByPlayerIndex(
-		    mapChipField_->GetNumBlockHorizontal(), mapChipField_->GetNumBlockVirtical());
+		Vector3 enemyPosition = {20.f+ 4 * i, 2.f, 0};
 		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
 		enemies_.push_back(newEnemy);
 	}
 }
 
+void GameScene::Update() {
 
-
-
-void GameScene::Update() 
-{
-	
 	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {
@@ -111,22 +97,24 @@ void GameScene::Update()
 			worldTransformBlock->TransferMatrix();
 		}
 	}
-
+	for (Enemy* enemy : enemies_) {
+		if (!enemy) {
+			continue;
+		}
+		enemy->Update();
+	}
 	player_->Update();
-	//enemy_->Update();
-	//for (uint32_t i = 0; i < 3; i++) {
-	//	newEnemy->Update();
-	//}
+
 	cameraController_->Update();
-	
-	#ifdef _DEBUG
+
+#ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {
 		isDebugCameraActive_ = true;
 	}
-	//if (input_->TriggerKey(DIK_O))
+	// if (input_->TriggerKey(DIK_O))
 	//{
 	//	player_->Update();
-	//}
+	// }
 #endif // DEBUG
 	debugCamera_->Update();
 	if (isDebugCameraActive_) {
@@ -136,7 +124,6 @@ void GameScene::Update()
 	} else {
 		viewProjection_.UpdateMatrix();
 	}
-	
 }
 
 void GameScene::Draw() {
@@ -167,10 +154,12 @@ void GameScene::Draw() {
 	/// </summary>
 
 	player_->Draw();
-	//enemy_->Draw();
-	//for (uint32_t i = 0; i < 3; i++) {
-	//	newEnemy->Draw();
-	//}
+	for (Enemy* enemy : enemies_) {
+		if (!enemy) {
+			continue;
+		}
+		enemy->Draw();
+	}
 	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {
@@ -197,5 +186,3 @@ void GameScene::Draw() {
 
 #pragma endregion
 }
-
-

@@ -66,11 +66,9 @@ void Player::Update() {
 		    std::numbers::pi_v<float> / 2.0f, 
 			std::numbers::pi_v<float> * 3.0f / 2.0f};
 
-		//float rate = 1 - turnTimer_ / kTimeTurn;
-		//float ease = easeInOutSine(rate);
 		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
 		worldTransform_.rotation_.y =
-		    easeInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTurn);
+			easeInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTurn);
 
 	}
 	// 上キー押していたら

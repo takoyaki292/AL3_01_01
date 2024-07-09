@@ -5,8 +5,8 @@
 void Enemy::Initalize(Model* model, ViewProjection* viewProjection, const Vector3& position) { 
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
-	worldTransform_.translation_.y = 2.0f;
-	worldTransform_.translation_.x = 30.0f;
+	//worldTransform_.translation_.y = 2.0f;
+	//worldTransform_.translation_.x = 30.0f;
 	worldTransform_.rotation_.y = std::numbers::pi_v<float>*1.5f;
 
 	viewProjection_ = viewProjection;
@@ -27,10 +27,10 @@ void Enemy::Update() {
 	worldTransform_.translation_ += velocity_;
 	// 行列計算
 	worldTransform_.UpdateMatrix();
+	worldTransform_.TransferMatrix();
 }
 
 void Enemy::Draw() { 
-	enemyModel_->Draw(worldTransform_, *viewProjection_);
-}
+	enemyModel_->Draw(worldTransform_, *viewProjection_); }
 
 void Enemy::SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }

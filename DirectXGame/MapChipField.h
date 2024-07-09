@@ -43,6 +43,7 @@ public:
 
 	Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex);
 	Vector3 GetMapChipPositionByPlayerIndex(uint32_t xIndex, uint32_t yIndex);
+	Vector3 GetMapChipPositionByEnemyIndex(uint32_t xIndex, uint32_t yIndex);
 
 	/// <summary>
 	/// 座標からマップチップ番号を取得
