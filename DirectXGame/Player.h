@@ -116,7 +116,6 @@ public:
 	/// </summary>
 	void wallContact(const CollisonMapInfo& info);
 
-	//float easeInOutSine(float num);
 	float easeInOut(float x1, float x2, float t);
 	float Lerp(float x1, float x2, float t);
 
@@ -125,8 +124,6 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	Vector3 GetWorldPosition();
-
-	
 	/// <summary>
 	/// AABB取得関数
 	/// </summary>

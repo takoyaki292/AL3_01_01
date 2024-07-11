@@ -13,6 +13,7 @@
 #include "Player.h"
 #include "CameraController.h"
 #include "Enemy.h"
+#include "DeathParticles.h"
 
 #ifndef STRUCT_H
 #define STRUCT_H
@@ -72,6 +73,8 @@ private: // メンバ変数
 	Model* modelBlock_ = nullptr;
 	Model* modelPlayer_ = nullptr;
 	Model* modelEnemy_ = nullptr;
+	Model* modelDeathParticles_ = nullptr;
+	
 
 	bool isDebugCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
@@ -88,9 +91,8 @@ private: // メンバ変数
 	//Enemy* enemy_ ;
 	//敵の複数化
 	std::list<Enemy*> enemies_;
-	//uint32_t kNumEnemy = 3;
-	//Enemy* newEnemy = new Enemy();
 	
+	DeathParticles* deathParticle_ = nullptr;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

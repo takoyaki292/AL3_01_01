@@ -65,6 +65,8 @@ GameScene::~GameScene() {
 		delete kEnemy;
 		// delete newEnemy;
 	}
+
+	delete deathParticle_;
 }
 
 void GameScene::Initialize() {
@@ -111,6 +113,12 @@ void GameScene::Initialize() {
 		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
 		enemies_.push_back(newEnemy);
 	}
+	//パーティクルをnewする
+	deathParticle_ = new DeathParticles();
+	// モデルプレイヤーの読み込む
+	modelDeathParticles_ = Model::CreateFromOBJ("playerModel", true);
+	//デスパーティクルを初期化する
+	deathParticle_->Initalize(modelDeathParticles_,&viewProjection_,playerPosition);
 }
 
 void GameScene::Update() {
@@ -132,11 +140,13 @@ void GameScene::Update() {
 		}
 		enemy->Update();
 		CheckAllCollisios();
+		
 	}
 	player_->Update();
 
 	cameraController_->Update();
-
+	//パーティクルの更新処理
+	deathParticle_->Update();
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {
 		isDebugCameraActive_ = true;
@@ -199,6 +209,7 @@ void GameScene::Draw() {
 		}
 	}
 
+	deathParticle_->Draw();
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
