@@ -4,7 +4,14 @@
 #include "WorldTransform.h"
 
 class MapChipField;
-
+class Player;
+#ifndef STRUCT_H
+#define STRUCT_H
+struct AABB {
+	Vector3 min;
+	Vector3 max;
+};
+#endif
 class Enemy {
 public:
 	/// <summary>
@@ -27,6 +34,25 @@ public:
 	/// </summary>
 	void SetMapChipField(MapChipField* mapChipField);
 
+	/// <summary>
+	/// 自キャラのワールド座標
+	/// </summary>
+	/// <returns></returns>
+	Vector3 GetWorldPosition();
+
+	/// <summary>
+	/// AABB取得関数
+	/// </summary>
+	/// <returns></returns>
+	AABB GetAABB();
+	/// <summary>
+	/// 衝突判定
+	/// </summary>
+	/// <param name="player"></param>
+	void OnCollisiton(const Player* player);
+
+	
+
 private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;
@@ -48,4 +74,8 @@ private:
 	float walkTimer_ = 0.0f;
 	//π
 	const double PI = 3.141593;
+
+	// キャラクターの当たり判定のサイズ
+	static inline const float kWidth = 1.6f;
+	static inline const float kHeight = 1.6f;
 };

@@ -391,3 +391,29 @@ float Player::easeInOut(float x1, float x2, float t) {
 	return Lerp(x1, x2, a);
 }
 float Player::Lerp(float x1, float x2, float t) { return (1.0f - t) * x1 + t * x2; }
+
+//自キャラのワールド座標
+Vector3 Player::GetWorldPosition() { 
+	Vector3 worldPos;
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+	return worldPos;
+}
+
+AABB Player::GetAABB() { 
+	Vector3 worldPos = GetWorldPosition();
+
+	AABB aabb;
+	aabb.min = {
+	    worldPos.x - kWidth / 2.0f, worldPos.y - kHeight / 2.0f, worldPos.z - kWidth / 2.0f};
+	aabb.max = {
+	    worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kWidth / 2.0f};
+	return aabb;
+}
+
+void Player::OnCollision(const Enemy* enemy) { 
+	(void)enemy;
+	DebugText::GetInstance()->ConsolePrintf("enemy ceiling\n\n");
+	velocity_ += Vector3(0,0.1f,0);
+}

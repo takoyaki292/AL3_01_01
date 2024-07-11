@@ -26,6 +26,35 @@ void GameScene::GenerateBlocks() {
 	}
 }
 
+void GameScene::CheckAllCollisios() { 
+	//AABB型を二つ作る
+	//自キャラと敵キャラを作る
+	AABB aabb1, aabb2;
+	//自キャラの座標
+	aabb1 = player_->GetAABB();
+	
+	for (Enemy* enemy : enemies_){
+		aabb2 = enemy->GetAABB();
+		if (IsCollision(aabb1, aabb2))
+		{
+			player_->OnCollision(enemy);
+			enemy->OnCollisiton(player_);
+		}
+	}
+	//DebugText::GetInstance()->ConsolePrintf("enemy ceiling\n\n");
+}
+
+bool GameScene::IsCollision(AABB a, AABB b) { 
+	
+	bool isF = false;
+	if (a.max.x>b.min.x && a.min.x<b.max.x 
+		&& a.max.y > b.min.y && a.min.y < b.max.y
+		&& a.max.z > b.min.z && a.min.z < b.max.z) {
+		isF = true;
+	}
+	return isF;
+}
+
 GameScene::~GameScene() {
 	delete mapChipField_;
 	delete debugCamera_;
@@ -102,6 +131,7 @@ void GameScene::Update() {
 			continue;
 		}
 		enemy->Update();
+		CheckAllCollisios();
 	}
 	player_->Update();
 

@@ -13,6 +13,14 @@
 #include "Player.h"
 #include "CameraController.h"
 #include "Enemy.h"
+
+#ifndef STRUCT_H
+#define STRUCT_H
+struct AABB {
+	Vector3 min;
+	Vector3 max;
+};
+#endif
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -46,6 +54,15 @@ public: // メンバ関数
 
 	void GenerateBlocks();
 
+	/// <summary>
+	/// 全ての当たり判定を行う
+	/// </summary>
+	void CheckAllCollisios();
+
+	
+	bool IsCollision(AABB a,AABB b);
+	
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -73,6 +90,7 @@ private: // メンバ変数
 	std::list<Enemy*> enemies_;
 	//uint32_t kNumEnemy = 3;
 	//Enemy* newEnemy = new Enemy();
+	
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

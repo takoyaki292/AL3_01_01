@@ -92,9 +92,3 @@ Matrix4x4 WorldTransform::MakeAffineMatrix(
 	a = Mu(rotateX, Mu(rotateY, rotateZ));
 	return Mu(s, Mu(a, t));
 }
-
-
-
-
-
-
