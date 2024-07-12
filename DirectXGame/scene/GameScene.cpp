@@ -138,15 +138,20 @@ void GameScene::Update() {
 		if (!enemy) {
 			continue;
 		}
-		enemy->Update();
-		CheckAllCollisios();
-		
+		else
+		{
+			enemy->Update();
+			CheckAllCollisios();
+		}
 	}
 	player_->Update();
 
 	cameraController_->Update();
-	//パーティクルの更新処理
-	deathParticle_->Update();
+	if (isDeachPaticled == true)
+	{
+		// パーティクルの更新処理
+		deathParticle_->Update();
+	}
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {
 		isDebugCameraActive_ = true;
@@ -209,7 +214,10 @@ void GameScene::Draw() {
 		}
 	}
 
-	deathParticle_->Draw();
+	if (isDeachPaticled == true)
+	{
+		deathParticle_->Draw();
+	}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion

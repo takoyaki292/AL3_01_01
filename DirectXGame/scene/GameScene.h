@@ -93,6 +93,9 @@ private: // メンバ変数
 	std::list<Enemy*> enemies_;
 	
 	DeathParticles* deathParticle_ = nullptr;
+	bool isDeachPaticled = true;
+
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

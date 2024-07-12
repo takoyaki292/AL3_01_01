@@ -142,7 +142,7 @@ private:
 
 	Vector3 velocity_ = {};
 	static inline const float kAceeleration = 0.01f;
-	Model* playerModel_ ;
+	Model* playerModel_=nullptr;
 	static inline const float kAttenuation = 0.1f;
 	static inline const float kLimitRunSpeed = 0.2f;
 
@@ -177,7 +177,5 @@ private:
 
 	//着磁の速度減衰率
 	static inline const float kAtteuationWall = 0.5f;
-
-	
 };
 
