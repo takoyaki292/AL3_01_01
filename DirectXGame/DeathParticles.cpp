@@ -47,22 +47,34 @@ void DeathParticles::Update()
 			worldTransforms_[i].translation_ += velocity;
 			counter_ += 1.0f / 60.0f;
 
-			
+			//counter_が0になったときに
+			if (counter_ == 0.0f) {
+				colorCounter_ = 1.0f;
+			}
+			//counter_が、消滅時間になったときに
+			else if (counter_ == kDuration) {
+				colorCounter_ = 0.0f;
+			}
+			//その他なら
+			else {
+				colorCounter_ -= 0.05f / 60.0f;
+			}
+
+			// 透明にしていく処理
+			color_.w = std::clamp(colorCounter_, 0.0f, 1.0f);
+			objectColor_.SetColor(color_);
+			objectColor_.TransferMatrix();
 		}
+		
 		if (counter_ >= kDuration) {
 			counter_ = kDuration;
 			isFinished_ = true;
 		}
-
 	} 
 	else if(isFinished_==true){
 		return;
 	}
-	// 透明にしていく処理
-	//透明にならない
-	color_.w = std::clamp(kDuration, 0.0f, 1.0f);
-	objectColor_.SetColor(color_);
-	objectColor_.TransferMatrix();
+	
 }
 
 void DeathParticles::Draw() { 
@@ -72,7 +84,6 @@ void DeathParticles::Draw() {
 			deathParticlesModel_->Draw(worldTransform, *viewProjection_, &objectColor_);
 		}
 	}
-	
 }
 
 Matrix4x4 DeathParticles::MakeRotateZMatrix(float radian) {

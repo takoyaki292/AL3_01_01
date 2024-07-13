@@ -56,7 +56,7 @@ public:
 private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;
-	Model* enemyModel_;
+	Model* enemyModel_=nullptr;
 
 	MapChipField* mapChipField_ = nullptr;
 	//敵の歩き速度

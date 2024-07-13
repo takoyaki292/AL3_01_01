@@ -49,15 +49,15 @@ private:
 	//// π
 	const double PI = 3.141593;
 
-	//ここの処理ができていない
 	//分割した一個分の角度
-	static inline float kAngleUnit=kNumParticles;
+	static inline float kAngleUnit=(3.14f*2)/kNumParticles;
 
 	//終了フラグ
 	bool isFinished_ = false;
 	//経過時間カウント
 	float counter_ = 0.0f;
-
+	//カラーの処理
+	float colorCounter_ = 1.0f;
 	ObjectColor objectColor_={};
 	Vector4 color_;
 };
