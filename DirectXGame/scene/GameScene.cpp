@@ -66,7 +66,7 @@ GameScene::~GameScene() {
 		// delete newEnemy;
 	}
 
-	delete deathParticle_;
+	//delete deathParticle_;
 }
 
 void GameScene::Initialize() {
@@ -109,16 +109,16 @@ void GameScene::Initialize() {
 	modelEnemy_ = Model::CreateFromOBJ("playerModel", true);
 	for (uint32_t i = 0; i < 1; ++i) {
 		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = {20.f+ 4 * i, 2.f, 0};
+		Vector3 enemyPosition = {10.f+ 4 * i, 2.f, 0};
 		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
 		enemies_.push_back(newEnemy);
 	}
-	//パーティクルをnewする
-	deathParticle_ = new DeathParticles();
-	// モデルプレイヤーの読み込む
-	modelDeathParticles_ = Model::CreateFromOBJ("playerModel", true);
-	//デスパーティクルを初期化する
-	deathParticle_->Initalize(modelDeathParticles_,&viewProjection_,playerPosition);
+	////パーティクルをnewする
+	//deathParticle_ = new DeathParticles();
+	//// モデルプレイヤーの読み込む
+	//modelDeathParticles_ = Model::CreateFromOBJ("playerModel", true);
+	////デスパーティクルを初期化する
+	//deathParticle_->Initalize(modelDeathParticles_,&viewProjection_,playerPosition);
 }
 
 void GameScene::Update() {
@@ -147,11 +147,11 @@ void GameScene::Update() {
 	player_->Update();
 
 	cameraController_->Update();
-	if (isDeachPaticled == true)
-	{
-		// パーティクルの更新処理
-		deathParticle_->Update();
-	}
+	//if (isDeachPaticled == true)
+	//{
+	//	// パーティクルの更新処理
+	//	deathParticle_->Update();
+	//}
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {
 		isDebugCameraActive_ = true;
@@ -214,10 +214,10 @@ void GameScene::Draw() {
 		}
 	}
 
-	if (isDeachPaticled == true)
-	{
-		deathParticle_->Draw();
-	}
+	//if (isDeachPaticled == true)
+	//{
+	//	deathParticle_->Draw();
+	//}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion

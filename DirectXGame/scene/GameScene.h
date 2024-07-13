@@ -13,7 +13,7 @@
 #include "Player.h"
 #include "CameraController.h"
 #include "Enemy.h"
-#include "DeathParticles.h"
+//#include "DeathParticles.h"
 
 #ifndef STRUCT_H
 #define STRUCT_H
@@ -92,8 +92,8 @@ private: // メンバ変数
 	//敵の複数化
 	std::list<Enemy*> enemies_;
 	
-	DeathParticles* deathParticle_ = nullptr;
-	bool isDeachPaticled = true;
+	//DeathParticles* deathParticle_ = nullptr;
+	//bool isDeachPaticled = true;
 
 
 	/// <summary>
