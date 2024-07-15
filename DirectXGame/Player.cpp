@@ -415,5 +415,6 @@ AABB Player::GetAABB() {
 void Player::OnCollision(const Enemy* enemy) { 
 	(void)enemy;
 	DebugText::GetInstance()->ConsolePrintf("enemy ceiling\n\n");
-	velocity_ += Vector3(0,0.1f,0);
+	isDead_ = true;
+	//velocity_ += Vector3(0,0.1f,0);
 }

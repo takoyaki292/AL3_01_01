@@ -135,9 +135,11 @@ public:
 	/// </summary>
 	void OnCollision(const Enemy* enemy);
 
+	bool isDead() const { return isDead_; };
+
 private:
-	WorldTransform worldTransform_;
-	ViewProjection* viewProjection_;
+	WorldTransform worldTransform_ = {};
+	ViewProjection* viewProjection_ = {};
 	LRDirection lrDirection_ = LRDirection::kRight;
 
 	Vector3 velocity_ = {};
@@ -177,5 +179,8 @@ private:
 
 	//着磁の速度減衰率
 	static inline const float kAtteuationWall = 0.5f;
+
+	//デスフラグ
+	bool isDead_ = false;
 };
 

@@ -54,8 +54,8 @@ public:
 	
 
 private:
-	WorldTransform worldTransform_;
-	ViewProjection* viewProjection_;
+	WorldTransform worldTransform_ = {};
+	ViewProjection* viewProjection_ = {};
 	Model* enemyModel_=nullptr;
 
 	MapChipField* mapChipField_ = nullptr;
