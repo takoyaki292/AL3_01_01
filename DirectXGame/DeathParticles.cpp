@@ -18,8 +18,8 @@ void DeathParticles::Initalize(Model* model, ViewProjection* viewProjection, con
 	for (auto& worldTransform : worldTransforms_) {
 		worldTransform.Initialize();
 		worldTransform.translation_ = position;
-		worldTransform.translation_.y = 2.0f;
-		worldTransform.translation_.x = 2.0f;
+		//worldTransform.translation_.y = 2.0f;
+		//worldTransform.translation_.x = 2.0f;
 	}
 	deathParticlesPlayer_->Initalize(deathParticlesModel_, viewProjection_, position);
 
@@ -69,6 +69,7 @@ void DeathParticles::Update()
 		if (counter_ >= kDuration) {
 			counter_ = kDuration;
 			isFinished_ = true;
+			finished_ = true;
 		}
 	} 
 	else if(isFinished_==true){

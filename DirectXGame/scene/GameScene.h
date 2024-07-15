@@ -3,7 +3,7 @@
 #include "Audio.h"
 #include "DirectXCommon.h"
 #include "Input.h"
-#include "Model.h"
+#include "Model.h"		
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
@@ -22,6 +22,14 @@ struct AABB {
 	Vector3 max;
 };
 #endif
+
+// ゲームのフェーズ
+enum class Phase {
+	kPlayer, // ゲームプレイ
+	kDeath,  // デス演出
+};
+
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -63,14 +71,11 @@ public: // メンバ関数
 	
 	bool IsCollision(AABB a,AABB b);
 	
-	//ゲームのフェーズ
-	enum class Phase {
-		kPlayer,	//ゲームプレイ
-		kDeath,		//デス演出
-	};
-
 	//フェーズの切り替え
 	void ChangePhase();
+
+	bool IsFinished() const { return finished_; };
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -95,7 +100,6 @@ private: // メンバ変数
 	Player* player_ = nullptr;
 	CameraController* cameraController_ = nullptr;
 
-	//Enemy* enemy_ ;
 	//敵の複数化
 	std::list<Enemy*> enemies_;
 	
@@ -105,7 +109,12 @@ private: // メンバ変数
 	//現在のフェーズ
 	Phase phase_;
 
+	//生きているかのフラグ
 	bool isDead_=false;
+	
+	//終了フラグ
+	bool finished_ = false;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

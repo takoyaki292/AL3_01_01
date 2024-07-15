@@ -30,6 +30,8 @@ public:
 	/// </summary>
 	void Draw();
 
+	bool IsFinished() const { return finished_; };
+
 private:
 	Matrix4x4 MakeRotateZMatrix(float radian);
 	Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
@@ -60,4 +62,7 @@ private:
 	float colorCounter_ = 1.0f;
 	ObjectColor objectColor_={};
 	Vector4 color_;
+
+	//終了フラグ
+	bool finished_ = false;
 };

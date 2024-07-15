@@ -84,6 +84,7 @@ void GameScene::ChangePhase() {
 		// カメラコントロールの更新処理
 		cameraController_->Update();
 
+		isDead_ = player_->isDead();
 		if (isDead_ == true) {
 			// 死亡演出フェーズに切り替え
 			phase_ = Phase::kDeath;
@@ -93,10 +94,17 @@ void GameScene::ChangePhase() {
 			// デスパーティクルを初期化する
 			deathParticle_->Initalize(
 			    modelDeathParticles_, &viewProjection_, deathParticlesPosition);
+		
+			isDeachPaticled = true;
 		}
 		break;
 	// デス演出フェーズの処理
 	case Phase::kDeath:
+		//// ゲームシーンの終了条件
+		if (deathParticle_ && deathParticle_->IsFinished()) {
+			finished_ = false;
+		}
+		
 		//// 敵の更新
 		//for (Enemy* enemy : enemies_) {
 		//	if (!enemy) {
@@ -203,6 +211,7 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+	
 	switch (phase_)
 	{ 
 	//ゲームプレイフェーズの処理
@@ -232,6 +241,7 @@ void GameScene::Update() {
 		// カメラコントロールの更新処理
 		cameraController_->Update();
 		
+		isDead_ = player_->isDead();
 		if (isDead_ == true){
 			//死亡演出フェーズに切り替え
 			phase_ = Phase::kDeath;
@@ -240,10 +250,14 @@ void GameScene::Update() {
 
 			// デスパーティクルを初期化する
 			deathParticle_->Initalize(modelDeathParticles_, &viewProjection_,deathParticlesPosition);
+			
+			//デスパーティクル用のフラグを立てる
+			isDeachPaticled = true;
 		}
 		break;
 	//デス演出フェーズの処理
 	case Phase::kDeath:
+		
 		//敵の更新
 		for (Enemy* enemy : enemies_) {
 			if (!enemy) {
@@ -273,6 +287,12 @@ void GameScene::Update() {
 				    worldTransformBlock->translation_);
 				worldTransformBlock->TransferMatrix();
 			}
+		}
+
+		// ゲームシーンの終了条件
+		if (deathParticle_ && deathParticle_->IsFinished()) {
+			finished_ = true;
+			
 		}
 		break;
 
