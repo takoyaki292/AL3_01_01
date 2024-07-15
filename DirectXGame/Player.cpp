@@ -139,8 +139,8 @@ void Player::mapCollisionDetectionRight(CollisonMapInfo* info) {
 	IndexSet indexSet;
 
 	bool hit = false;
-	positionNew[kRightTop] -= Vector3(-kGaq, 0, 0);
-	positionNew[kRightBottom] -= Vector3(-kGaq, 0, 0);
+	positionNew[kRightTop] += Vector3(+kGaq, 0, 0);
+	positionNew[kRightBottom] += Vector3(+kGaq, 0, 0);
 	// 右下の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
@@ -154,7 +154,7 @@ void Player::mapCollisionDetectionRight(CollisonMapInfo* info) {
 		hit = true;
 	}
 	if (hit == true) {
-		float right = worldTransform_.translation_.x - kWidth / 2 - kGaq;
+		float right = worldTransform_.translation_.x + kWidth / 2 + kGaq;
 		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 		info->move.x = std::min(0.0f, rect.left - right);
 		// 壁のフラグを立てている
@@ -194,7 +194,7 @@ void Player::mapCollisionDetectionLeft(CollisonMapInfo* info) {
 		hit = true;
 	}
 	if (hit == true && info->wallContactFlag== false) {
-		float left = worldTransform_.translation_.x - kWidth / 2;
+		float left = worldTransform_.translation_.x - kWidth / 2-kGaq;
 		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 		info->move.x = std::max(0.0f, rect.right-left);
 		// 壁のフラグを立てている
