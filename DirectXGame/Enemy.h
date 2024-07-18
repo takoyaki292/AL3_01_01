@@ -54,7 +54,7 @@ public:
 	
 
 private:
-	WorldTransform worldTransform_ = {};
+	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_ = {};
 	Model* enemyModel_=nullptr;
 

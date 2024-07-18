@@ -14,8 +14,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <Input.h>
-void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vector3& position)
-{
+void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vector3& position){
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	worldTransform_.translation_.y = 2.0f;
@@ -24,8 +23,6 @@ void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vecto
 
 	viewProjection_ = viewProjection;
 	playerModel_ = model;
-	
-		
 }
 
 void Player::Update() {
@@ -41,7 +38,7 @@ void Player::Update() {
 			// 向かう方向に変わる
 			if (lrDirection_ != LRDirection::kRight) {
 				lrDirection_ = LRDirection::kRight;
-				turnFirstRotationY_ =-worldTransform_.rotation_.y;
+				turnFirstRotationY_ =worldTransform_.rotation_.y;
 				turnTimer_ = kTimeTurn;
 			}
 		} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
@@ -387,7 +384,7 @@ void Player::wallContact(const CollisonMapInfo& info) {
 //	return -(cos((float)M_PI*num)-1)/2; }
 
 float Player::easeInOut(float x1, float x2, float t) {
-	float a = -(std::cosf(std::numbers::pi_v<float> * t) - 1.0f) / 2.0f;
+	float a =-(std::cosf(std::numbers::pi_v<float> * t) - 1.0f) / 2.0f;
 	return Lerp(x1, x2, a);
 }
 float Player::Lerp(float x1, float x2, float t) { return (1.0f - t) * x1 + t * x2; }

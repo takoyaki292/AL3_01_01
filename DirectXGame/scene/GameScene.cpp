@@ -147,7 +147,6 @@ GameScene::~GameScene() {
 	// delete enemy_;
 	for (Enemy* kEnemy : enemies_) {
 		delete kEnemy;
-		// delete newEnemy;
 	}
 
 	delete deathParticle_;
