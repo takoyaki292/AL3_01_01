@@ -68,6 +68,7 @@ public:
 	Player* target_ = nullptr;
 	Vector3 targetOffset_ = {0, 0, -40.0f};
 	Vector3 targetCoordinates = {};
-	};
+};
+
 
  
