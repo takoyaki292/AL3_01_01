@@ -153,7 +153,7 @@ void Player::mapCollisionDetectionRight(CollisonMapInfo* info) {
 		//float right = worldTransform_.translation_.x - kWidth / 2+kGaq;
 		float right = worldTransform_.translation_.x - kWidth / 2;
 		Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-		info->move.x = std::min(0.0f, rect.left - right);
+		info->move.x = std::min(0.0f, rect.left + right);
 		// 壁のフラグを立てている
 		info->wallContactFlag = true;
 	}
@@ -374,10 +374,9 @@ void Player::landing(const CollisonMapInfo& info) {
 void Player::wallContact(const CollisonMapInfo& info) { 
 	if (info.wallContactFlag == true){
 		DebugText::GetInstance()->ConsolePrintf("wall ceiling\n\n");
-
-		velocity_.x *= (1.0f - kAtteuationWall);
+		velocity_.x = 0.0f;
+		//velocity_.x *= (1.0f - kAtteuationWall);
 	}
-
 }
 
 //float Player::easeInOutSine(float num) { 
