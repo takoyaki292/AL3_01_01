@@ -377,8 +377,8 @@ void Player::landing(const CollisonMapInfo& info) {
 void Player::wallContact(const CollisonMapInfo& info) { 
 	if (info.wallContactFlag == true){
 		DebugText::GetInstance()->ConsolePrintf("wall ceiling\n\n");
-
-		velocity_.x *= (1.0f - kAtteuationWall);
+		velocity_.x = 0.0f;
+		//velocity_.x *= (1.0f - kAtteuationWall);
 	}
 
 }
