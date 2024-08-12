@@ -176,6 +176,6 @@ private:
 	static inline const float kGaq = 0.6f;
 
 	//着磁の速度減衰率
-	static inline const float kAtteuationWall = 0.5f;
+	static inline const float kAtteuationWall = 0.2f;
 };
 
