@@ -22,6 +22,14 @@ void GameScene::GenerateBlocks() {
 				worldTransformBlocks_[i][j]->translation_ =
 				    mapChipField_->GetMapChipPositionByIndex(j, i);
 			}
+
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kMoveBlock) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformBlocks_[i][j] = worldTransform;
+				worldTransformBlocks_[i][j]->translation_ =
+				    mapChipField_->GetMapChipPositionByIndex(j, i);
+			}
 		}
 	}
 }
