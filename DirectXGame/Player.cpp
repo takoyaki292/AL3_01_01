@@ -379,9 +379,6 @@ void Player::wallContact(const CollisonMapInfo& info) {
 	}
 }
 
-//float Player::easeInOutSine(float num) { 
-//	return -(cos((float)M_PI*num)-1)/2; }
-
 float Player::easeInOut(float x1, float x2, float t) {
 	float a =-(std::cosf(std::numbers::pi_v<float> * t) - 1.0f) / 2.0f;
 	return Lerp(x1, x2, a);
