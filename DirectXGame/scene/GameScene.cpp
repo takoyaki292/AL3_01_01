@@ -21,6 +21,7 @@ void GameScene::GenerateBlocks() {
 				worldTransformBlocks_[i][j] = worldTransform;
 				worldTransformBlocks_[i][j]->translation_ =
 				    mapChipField_->GetMapChipPositionByIndex(j, i);
+				currentChipType = MapChipType::kBlock;
 			}
 
 			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kMoveBlock) {
@@ -29,6 +30,7 @@ void GameScene::GenerateBlocks() {
 				worldTransformBlocks_[i][j] = worldTransform;
 				worldTransformBlocks_[i][j]->translation_ =
 				    mapChipField_->GetMapChipPositionByIndex(j, i);
+				currentChipType = MapChipType ::kMoveBlock;
 			}
 		}
 	}
@@ -63,6 +65,8 @@ bool GameScene::IsCollision(AABB a, AABB b) {
 	return isF;
 }
 
+
+
 GameScene::~GameScene() {
 	delete mapChipField_;
 	delete debugCamera_;
@@ -93,11 +97,12 @@ void GameScene::Initialize() {
 	GenerateBlocks();
 
 	modelBlock_ = Model::Create();
+	modelTBlock_ = Model::CreateFromOBJ("moveCube",true);
 
 	playerWorldTransform_.Initialize();
 
 	player_ = new Player();
-	// Vector3型でポジションを初期化する
+	//// Vector3型でポジションを初期化する
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByPlayerIndex(
 	    mapChipField_->GetNumBlockHorizontal(), mapChipField_->GetNumBlockVirtical());
 	// モデルプレイヤーの読み込む
@@ -136,10 +141,14 @@ void GameScene::Update() {
 			if (!worldTransformBlock) {
 				continue;
 			}
-			worldTransformBlock->matWorld_ = worldTransformBlock->MakeAffineMatrix(
-			    worldTransformBlock->scale_, worldTransformBlock->rotation_,
-			    worldTransformBlock->translation_);
-			worldTransformBlock->TransferMatrix();
+			else
+			{
+				worldTransformBlock->matWorld_ = worldTransformBlock->MakeAffineMatrix(
+				    worldTransformBlock->scale_, worldTransformBlock->rotation_,
+				    worldTransformBlock->translation_);
+				worldTransformBlock->TransferMatrix();
+			}
+			
 		}
 	}
 	for (Enemy* enemy : enemies_) {
@@ -218,14 +227,21 @@ void GameScene::Draw() {
 			if (!worldTransformBlock) {
 				continue;
 			}
-			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+			
+			
+			//MapChipType currentChipType = MapChipType::kBlock; 
+
+			if (currentChipType == MapChipType::kBlock) {
+				modelTBlock_->Draw(*worldTransformBlock, viewProjection_);
+			}
+			else if (currentChipType == MapChipType::kMoveBlock)
+			{
+				modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+			}
 		}
 	}
 
-	//if (isDeachPaticled == true)
-	//{
-	//	deathParticle_->Draw();
-	//}
+	
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -242,4 +258,21 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+int GameScene::switching(MapChipType mapChipNumber) {
+	int num;
+	switch (mapChipNumber) {
+	case MapChipType::kBlock:
+		num = 1;
+		break;
+	case MapChipType::kMoveBlock:
+		num = 2;
+		break;
+	// 他の MapChipType が追加された場合の処理をここに追加することができます。
+	default:
+		num = 0;
+		break;
+	}
+	return num;
 }

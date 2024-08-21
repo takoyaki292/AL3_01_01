@@ -16,7 +16,7 @@ CameraController::~CameraController() {}
 
 void CameraController::Initialize(ViewProjection* viewProjection) { 
 	viewProjection_ = viewProjection;
-	
+	targetCoordinates.y = 10.0f;
 	//targetWorldTransform_.Initialize();
 }
 

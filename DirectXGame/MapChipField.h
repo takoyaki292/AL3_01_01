@@ -59,10 +59,13 @@ public:
 
 	static inline const float kBlockWidth = 2.0f;
 	static inline const float kBlockHeight = 2.0f;
+
+	//void switching(int a);
+
 private:
 
-	static inline const uint32_t kNumBlockVirtical = 30;
-	static inline const uint32_t kNumBlockHorizontal = 100;
+	static inline const uint32_t kNumBlockVirtical = 16;
+	static inline const uint32_t kNumBlockHorizontal = 200;
 	//static inline const uint32_t kNumPlayerHeight = 100;
 
 	MapChipData mapChipData_;

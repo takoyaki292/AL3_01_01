@@ -63,6 +63,7 @@ public: // メンバ関数
 	
 	bool IsCollision(AABB a,AABB b);
 	
+	int switching(MapChipType mapChipNumber);
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -71,6 +72,7 @@ private: // メンバ変数
 
 	// モデル
 	Model* modelBlock_ = nullptr;
+	Model* modelTBlock_ = nullptr;
 	Model* modelPlayer_ = nullptr;
 	Model* modelEnemy_ = nullptr;
 	Model* modelDeathParticles_ = nullptr;
@@ -87,7 +89,7 @@ private: // メンバ変数
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 	Player* player_ = nullptr;
 	CameraController* cameraController_ = nullptr;
-
+	
 	//Enemy* enemy_ ;
 	//敵の複数化
 	std::list<Enemy*> enemies_;
@@ -95,7 +97,9 @@ private: // メンバ変数
 	//DeathParticles* deathParticle_ = nullptr;
 	//bool isDeachPaticled = true;
 
-
+	//MapChipType mapChipType;
+	MapChipType currentChipType = MapChipType::kBlock; 
+	int isB = 0;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

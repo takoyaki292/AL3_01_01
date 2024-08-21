@@ -141,10 +141,10 @@ private:
 	LRDirection lrDirection_ = LRDirection::kRight;
 
 	Vector3 velocity_ = {};
-	static inline const float kAceeleration = 0.01f;
+	static inline const float kAceeleration = 0.005f;
 	Model* playerModel_=nullptr;
-	static inline const float kAttenuation = 0.1f;
-	static inline const float kLimitRunSpeed = 0.2f;
+	static inline const float kAttenuation = 0.01f;
+	static inline const float kLimitRunSpeed = 0.05f;
 
 	//旋回開始時の角度
 	float turnFirstRotationY_ = 0.0f;
@@ -157,7 +157,7 @@ private:
 
 	static inline const float kGravityAcceleration = 0.05f;
 	static inline const float kLimitFallSpeed = 0.5f;
-	static inline const float kJumpAcceleration = 0.7f;
+	static inline const float kJumpAcceleration = 0.6f;
 	
 	static inline const float kBlack = 1.0f;
 
@@ -170,12 +170,12 @@ private:
 
 
 	//着磁の速度減少率
-	static inline const float kAttenuationLanding = 0.1f;
+	static inline const float kAttenuationLanding = 0.02f;
 
 	//マップチップとの隙間
 	static inline const float kGaq = 0.6f;
 
 	//着磁の速度減衰率
-	static inline const float kAtteuationWall = 0.2f;
+	static inline const float kAtteuationWall = 0.02f;
 };
 

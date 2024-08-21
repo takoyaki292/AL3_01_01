@@ -18,7 +18,7 @@ void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vecto
 {
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
-	worldTransform_.translation_.y = 2.0f;
+	worldTransform_.translation_.y = 15.0f;
 	worldTransform_.translation_.x = 2.0f;
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 
@@ -48,7 +48,7 @@ void Player::Update() {
 			if (velocity_.x > 0.0f) {
 				velocity_.x *= (1.0f - kAttenuation);
 			}
-			acceleration.x -= kAceeleration;
+			//acceleration.x -= kAceeleration;
 			// 向かう方向に変わる
 			if (lrDirection_ != LRDirection::kLeft) {
 				lrDirection_ = LRDirection::kLeft;
@@ -60,6 +60,7 @@ void Player::Update() {
 		}
 		velocity_ += acceleration;
 	}
+	velocity_.x *= (1.0f - kAttenuation);
 	if (turnTimer_ > 0.0f) {
 		turnTimer_ -= 1.0f / 60.0f;
 		float destinationRotationYTable[] = {
@@ -90,6 +91,7 @@ void Player::Update() {
 		// 天井にあたっていると処理をする
 		ceiling(info);
 	}
+	if (!info.landingFlag&&!info.ceilingCollisionFlag)
 	// 壁に接触している場合の処理
 	wallContact(info);
 
