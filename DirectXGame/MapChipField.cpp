@@ -90,22 +90,14 @@ Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t yIndex) {
 
 	Rect rect;
 	rect.left = center.x - kBlockWidth/2.0f;
-	rect.right = center.x + kBlockWidth / 2.0f;
+	rect.right = center.x + kBlockWidth / 2.0f;		
 	rect.bottom = center.y - kBlockHeight / 2.0f;
 	rect.top = center.y + kBlockHeight / 2.0f;
 
 	return rect; 
 }
-//void MapChipField::switching(int a) {
-//	MapChipType mapChipType{};
-//	if (mapChipType==MapChipType::kBlock)
-//	{
-//		a=1;
-//	} else if (mapChipType == MapChipType::kMoveBlock) {
-//		a = 2;
-//	}
-//	//return false;
-//}
+
+
 
 Vector3 MapChipField::GetMapChipPositionByPlayerIndex(uint32_t xIndex, uint32_t yIndex) {
 

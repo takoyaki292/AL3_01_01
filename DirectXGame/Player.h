@@ -2,10 +2,12 @@
 #include"Model.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-
+#include <ctime>
 class MapChipField;
 
 class Enemy;
+class Bullet;
+class MoveEnemy;
 #ifndef STRUCT_H
 #define STRUCT_H
 struct AABB {
@@ -134,7 +136,21 @@ public:
 	///　衝突判定
 	/// </summary>
 	void OnCollision(const Enemy* enemy);
+	void OnCollisionBullet(const Bullet* bullet);
+	void OnCollisionMoveEnemy(const MoveEnemy* moveEnemy);
+	
+	/// <summary>
+	/// 時間制限をチェックする
+	/// </summary>
+	void CheckTimeLimit();
 
+	void OnTimeOver();
+
+	void StartTimer(int duration);
+
+	bool isAlive = true;
+
+	Vector3 playerP_;
 private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;
@@ -165,8 +181,8 @@ private:
 
 
 	// キャラクターの当たり判定のサイズ
-	static inline const float kWidth = 1.6f;
-	static inline const float kHeight = 1.6f;
+	static inline const float kWidth = 2.6f;
+	static inline const float kHeight = 2.6f;
 
 
 	//着磁の速度減少率
@@ -177,5 +193,12 @@ private:
 
 	//着磁の速度減衰率
 	static inline const float kAtteuationWall = 0.02f;
+
+	bool isJ = false;
+
+	 std::time_t startTime_; // 制限時間の開始時間
+	int timeLimit_;         // 制限時間（秒単位）
+	bool isTimeOver_;       // 時間切れフラグ
+
 };
 

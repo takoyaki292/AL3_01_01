@@ -18,96 +18,115 @@ void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vecto
 {
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
-	worldTransform_.translation_.y = 15.0f;
-	worldTransform_.translation_.x = 2.0f;
+	worldTransform_.translation_.y = 2.5f;
+	worldTransform_.translation_.x = 55.0f;
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 
 	viewProjection_ = viewProjection;
 	playerModel_ = model;
-	
-		
+	startTime_=0; 
+	timeLimit_=5;         
+	isTimeOver_=false; 
+
+	isAlive = true;
+
 }
 
 void Player::Update() {
-	//移動入力
-	// 左右移動操作
-	if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
-		Vector3 acceleration = {};
-		if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
-			if (velocity_.x < 0.0f) {
-				velocity_.x *= (1.0f - kAttenuation);
+	if (isAlive == true)
+	{
+		// 移動入力
+		// 左右移動操作
+		if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
+			Vector3 acceleration = {};
+			if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
+				if (velocity_.x < 0.0f) {
+					velocity_.x *= (1.0f - kAttenuation);
+				}
+				acceleration.x += kAceeleration;
+				// 向かう方向に変わる
+				if (lrDirection_ != LRDirection::kRight) {
+					lrDirection_ = LRDirection::kRight;
+					turnFirstRotationY_ = -worldTransform_.rotation_.y;
+					turnTimer_ = kTimeTurn;
+				}
+			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
+				if (velocity_.x > 0.0f) {
+					velocity_.x *= (1.0f - kAttenuation);
+				}
+				acceleration.x -= kAceeleration;
+				// 向かう方向に変わる
+				if (lrDirection_ != LRDirection::kLeft) {
+					lrDirection_ = LRDirection::kLeft;
+					turnFirstRotationY_ = worldTransform_.rotation_.y;
+					turnTimer_ = kTimeTurn;
+				}
+			} else {
+				velocity_.x += (1.0f - kAttenuation);
 			}
-			acceleration.x += kAceeleration;
-			// 向かう方向に変わる
-			if (lrDirection_ != LRDirection::kRight) {
-				lrDirection_ = LRDirection::kRight;
-				turnFirstRotationY_ =-worldTransform_.rotation_.y;
-				turnTimer_ = kTimeTurn;
-			}
-		} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
-			if (velocity_.x > 0.0f) {
-				velocity_.x *= (1.0f - kAttenuation);
-			}
-			//acceleration.x -= kAceeleration;
-			// 向かう方向に変わる
-			if (lrDirection_ != LRDirection::kLeft) {
-				lrDirection_ = LRDirection::kLeft;
-				turnFirstRotationY_ = worldTransform_.rotation_.y;
-				turnTimer_ = kTimeTurn;
-			}
-		} else {
-			velocity_.x += (1.0f - kAttenuation);
+			velocity_ += acceleration;
 		}
-		velocity_ += acceleration;
-	}
-	velocity_.x *= (1.0f - kAttenuation);
-	if (turnTimer_ > 0.0f) {
-		turnTimer_ -= 1.0f / 60.0f;
-		float destinationRotationYTable[] = {
-		    std::numbers::pi_v<float> / 2.0f, 
-			std::numbers::pi_v<float> * 3.0f / 2.0f};
+		velocity_.x *= (1.0f - kAttenuation);
+		if (turnTimer_ > 0.0f) {
+			turnTimer_ -= 1.0f / 60.0f;
+			float destinationRotationYTable[] = {
+			    std::numbers::pi_v<float> / 2.0f, std::numbers::pi_v<float> * 3.0f / 2.0f};
 
-		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
-		worldTransform_.rotation_.y =
-			easeInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTurn);
+			float destinationRotationY =
+			    destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
+			worldTransform_.rotation_.y =
+			    easeInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTurn);
+		}
+		if (isJ == false) {
+			// 上キー押していたら
+			if (Input::GetInstance()->TriggerKey(DIK_UP)) {
+				isJ = true;
 
-	}
-	// 上キー押していたら
-	if (Input::GetInstance()->TriggerKey(DIK_UP)) {
+				// ジャンプの加速度
+				velocity_ += Vector3(0, kJumpAcceleration, 0);
+			}
+		}
+		if (Input::GetInstance()->TriggerKey(DIK_A)) {
+			// 5秒の制限時間を設定
+			StartTimer(5);
+		}
 
-		// ジャンプの加速度
-		velocity_ += Vector3(0, kJumpAcceleration, 0);
+		// 移動量を加味して衝突判定
+		CollisonMapInfo info;
+		info.move = velocity_;
+		mapCollision(info);
+
+		// 反映する処理
+		Reflection(info);
+		if (!info.landingFlag) {
+			// 天井にあたっていると処理をする
+			ceiling(info);
+		}
+		if (!info.landingFlag && !info.ceilingCollisionFlag)
+			// 壁に接触している場合の処理
+			wallContact(info);
+
+		if (!info.ceilingCollisionFlag) {
+			// 接地状態の切り替え
+			landing(info);
+		}
+		CheckTimeLimit(); // 時間制限のチェック
+
+		// 旋回制御
+		worldTransform_.translation_ += velocity_;
+
+		// 行列計算
+		worldTransform_.UpdateMatrix();
 	}
 	
-	// 移動量を加味して衝突判定
-	CollisonMapInfo info;
-	info.move = velocity_;
-	mapCollision(info);
-
-	// 反映する処理
-	Reflection(info);
-	if (!info.landingFlag)
-	{
-		// 天井にあたっていると処理をする
-		ceiling(info);
-	}
-	if (!info.landingFlag&&!info.ceilingCollisionFlag)
-	// 壁に接触している場合の処理
-	wallContact(info);
-
-	if (!info.ceilingCollisionFlag) {
-		//接地状態の切り替え
-		landing(info);
-	}
-
-	// 旋回制御
-	worldTransform_.translation_ += velocity_;
-
-	// 行列計算
-	worldTransform_.UpdateMatrix();
 }
 
-void Player::Draw() { playerModel_->Draw(worldTransform_, *viewProjection_); }
+void Player::Draw() { 
+	if (isAlive == true)
+	{
+		playerModel_->Draw(worldTransform_, *viewProjection_); 
+	}
+}
 
 WorldTransform& Player::GetWorldTransform() { return worldTransform_; }
 
@@ -320,13 +339,10 @@ void Player::landing(const CollisonMapInfo& info) {
 	if (onGround_==true) {
 		if (velocity_.y > 0.0f) {
 			onGround_ = false;
+			
 		} 
 		else {
 			std::array<Vector3, kNumCorner> positionNew{};
-			for (uint32_t i = 0; i < positionNew.size(); i++) {
-				positionNew[i] = CornnerPosition(
-				    worldTransform_.translation_ + info.move, static_cast<Corner>(i));
-			}
 			MapChipType mapChipType;
 
 			IndexSet indexSet;
@@ -340,6 +356,10 @@ void Player::landing(const CollisonMapInfo& info) {
 
 			if (mapChipType == MapChipType ::kBlock) {
 				hit = true;
+			for (uint32_t i = 0; i < positionNew.size(); i++) {
+				positionNew[i] = CornnerPosition(
+				    worldTransform_.translation_ + info.move, static_cast<Corner>(i));
+			}
 			}
 			// 右下の判定
 			indexSet = mapChipField_->GetMapChipIndexSetByPosition(
@@ -350,6 +370,8 @@ void Player::landing(const CollisonMapInfo& info) {
 			}
 			if (!hit){
 				onGround_ = false;
+			} else {
+				isJ = false;
 			}
 
 		}
@@ -419,4 +441,39 @@ void Player::OnCollision(const Enemy* enemy) {
 	(void)enemy;
 	DebugText::GetInstance()->ConsolePrintf("enemy ceiling\n\n");
 	velocity_ += Vector3(0,0.1f,0);
+	isAlive = false;
 }
+
+void Player::OnCollisionBullet(const Bullet* bullet) { 
+	(void)bullet; 
+	DebugText::GetInstance()->ConsolePrintf("bullet ceiling\n\n");
+	//elocity_ += Vector3(0.1f, 0.f, 0);
+	isAlive = false;
+}
+
+void Player::OnCollisionMoveEnemy(const MoveEnemy* moveEnemy) { 
+	(void)moveEnemy;
+	DebugText::GetInstance()->ConsolePrintf("moveEnemy ceiling\n\n");
+	//isAlive = false;
+}
+
+void Player::CheckTimeLimit() {
+	if (!isTimeOver_) {
+		std::time_t currentTime = std::time(nullptr);
+		if (std::difftime(currentTime, startTime_) >= timeLimit_) {
+			isTimeOver_ = true;
+			OnTimeOver(); // 時間切れ時の処理を呼び出す
+		}
+	}
+}
+
+void Player::OnTimeOver() { 
+	DebugText::GetInstance()->ConsolePrintf("time Over\n\n"); }
+
+void Player::StartTimer(int duration) {
+	startTime_ = std::time(nullptr); // 現在の時間を取得
+	timeLimit_ = duration;           // 制限時間を設定
+	isTimeOver_ = false;             // 時間切れフラグをリセット
+	DebugText::GetInstance()->ConsolePrintf("time Start\n\n");
+}
+

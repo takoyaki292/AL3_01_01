@@ -2,6 +2,7 @@
 #include "CameraController.h"
 #include "Enemy.h"
 #include "Player.h"
+#include "MoveEnemy.h"
 #include "TextureManager.h"
 #include <cassert>
 
@@ -30,7 +31,7 @@ void GameScene::GenerateBlocks() {
 				worldTransformBlocks_[i][j] = worldTransform;
 				worldTransformBlocks_[i][j]->translation_ =
 				    mapChipField_->GetMapChipPositionByIndex(j, i);
-				currentChipType = MapChipType ::kMoveBlock;
+				currentMapChipType = MapChipType ::kMoveBlock;
 			}
 		}
 	}
@@ -39,16 +40,35 @@ void GameScene::GenerateBlocks() {
 void GameScene::CheckAllCollisios() { 
 	//AABB型を二つ作る
 	//自キャラと敵キャラを作る
-	AABB aabb1, aabb2;
+	AABB aabb1, aabb2,aabb3,aabb4;
 	//自キャラの座標
 	aabb1 = player_->GetAABB();
 	
 	for (Enemy* enemy : enemies_){
 		aabb2 = enemy->GetAABB();
+		
 		if (IsCollision(aabb1, aabb2))
 		{
 			player_->OnCollision(enemy);
 			enemy->OnCollisiton(player_);
+		}
+		for (Bullet* bullet : bullets_)
+		{
+			aabb3 = bullet->GetAABB();
+			if (IsCollision(aabb1, aabb3))
+			{
+				player_->OnCollisionBullet(bullet);
+				bullet->OnCollisiton(player_);
+			}
+		}
+	}
+
+	for (MoveEnemy* moveEnemy : moveEnemies_)
+	{
+		aabb4 = moveEnemy->GetAABB();
+		if (IsCollision(aabb1, aabb4)) {
+			player_->OnCollisionMoveEnemy(moveEnemy);
+			moveEnemy->OnCollisiton(player_);
 		}
 	}
 	//DebugText::GetInstance()->ConsolePrintf("enemy ceiling\n\n");
@@ -77,7 +97,15 @@ GameScene::~GameScene() {
 		delete kEnemy;
 		// delete newEnemy;
 	}
-
+	for (Bullet* kBullet : bullets_)
+	{
+		delete kBullet;
+	}
+	for (MoveEnemy* kMoveEnemy : moveEnemies_)
+	{
+		delete kMoveEnemy;
+	}
+	delete skydome_;
 	//delete deathParticle_;
 }
 
@@ -119,23 +147,52 @@ void GameScene::Initialize() {
 	cameraController_->Reset();
 	cameraController_->SetMovebleArea({0, 500, 0, 70});
 
-	modelEnemy_ = Model::CreateFromOBJ("playerModel", true);
-	for (uint32_t i = 0; i < 0; ++i) {
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	// 天球の生成
+	skydome_ = new Skydome();
+	// 天球の初期化
+	skydome_->Initialize(modelSkydome_, &viewProjection_);
+
+
+	modelEnemy_ = Model::CreateFromOBJ("enemyModel", true);
+	modelEnemyBullet_ = Model::CreateFromOBJ("enemyBulletModel", true);
+	modelMoveEnemy_ = Model::CreateFromOBJ("moveEnemyModel", true);
+	lifetime = 700.f;
+	//張り付いてくる敵
+	for (uint32_t i = 0; i <6; ++i) {
+		if (i % 2 == 0)
+		{
+			bulletSpeed = 0.005f;
+		} else {
+			bulletSpeed = 0.010f;
+		}
 		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = {10.f+ 4 * i, 2.f, 0};
+		Bullet* newBullet = new Bullet();
+		Vector3 enemyPosition = {16.f+ 16* i, 28.f, 0};
+		Vector3 bulletPosition = {16.f+ 16 * i, 26.f, 0};
 		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
+		newBullet->Initalize(modelEnemyBullet_, &viewProjection_, bulletPosition,lifetime,bulletSpeed);
 		enemies_.push_back(newEnemy);
+		bullets_.push_back(newBullet);
+	}
+
+	for (uint32_t i = 0; i < 3; i++)
+	{
+		MoveEnemy* newMoveEnemy = new MoveEnemy();
+		Vector3 enemyPosition = {16.f + 20 * i, 2.f, 0};
+		newMoveEnemy->Initalize(modelMoveEnemy_, &viewProjection_, enemyPosition);
+		moveEnemies_.push_back(newMoveEnemy);
 	}
 	////パーティクルをnewする
-	//deathParticle_ = new DeathParticles();
-	//// モデルプレイヤーの読み込む
-	//modelDeathParticles_ = Model::CreateFromOBJ("playerModel", true);
-	////デスパーティクルを初期化する
-	//deathParticle_->Initalize(modelDeathParticles_,&viewProjection_,playerPosition);
+	deathParticle_ = new DeathParticles();
+	// モデルプレイヤーの読み込む
+	modelDeathParticles_ = Model::CreateFromOBJ("playerModel", true);
+	//デスパーティクルを初期化する
+	deathParticle_->Initalize(modelDeathParticles_,&viewProjection_,playerPosition);
 }
 
 void GameScene::Update() {
-
+	skydome_->Update();
 	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {
@@ -151,24 +208,47 @@ void GameScene::Update() {
 			
 		}
 	}
+	//上に張り付いている敵
 	for (Enemy* enemy : enemies_) {
 		if (!enemy) {
 			continue;
 		}
 		else
 		{
+			for (Bullet* bullet : bullets_) {
+				if (!bullet) {
+					continue;
+				} else {
+					bullet->Update();
+				}
+			}
 			enemy->Update();
 			CheckAllCollisios();
 		}
+		
 	}
+	for (MoveEnemy* moveEnemy : moveEnemies_) {
+		if (!moveEnemy) {
+			continue;
+		} else {	
+			moveEnemy->Update();
+			//CheckAllCollisios();
+		}
+	}
+
 	player_->Update();
 
-	cameraController_->Update();
-	//if (isDeachPaticled == true)
-	//{
-	//	// パーティクルの更新処理
-	//	deathParticle_->Update();
-	//}
+	//cameraController_->Update();
+	if (player_->isAlive == false)
+	{
+		// パーティクルの更新処理
+		deathParticle_->Update();
+	} 
+	else {
+		//Vector3 playerPosition = player_->v;
+		//// デスパーティクルを初期化する
+		//deathParticle_->Initalize(modelDeathParticles_, &viewProjection_,playerPosition );
+	}
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {
 		isDebugCameraActive_ = true;
@@ -214,14 +294,31 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-
+	skydome_->Draw();
 	player_->Draw();
 	for (Enemy* enemy : enemies_) {
 		if (!enemy) {
 			continue;
-		}
+		} else {
 		enemy->Draw();
+		}
+		for (Bullet* bullet : bullets_) {
+			if (!bullet) {
+				continue;
+			} else {
+				bullet->Draw();
+			}
+		}
+		
 	}
+	for (MoveEnemy* moveEnemy : moveEnemies_) {
+		if (!moveEnemy) {
+			continue;
+		} else {
+			moveEnemy->Draw();
+		}
+	}
+
 	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {
@@ -230,18 +327,13 @@ void GameScene::Draw() {
 			
 			
 			//MapChipType currentChipType = MapChipType::kBlock; 
-
-			if (currentChipType == MapChipType::kBlock) {
-				modelTBlock_->Draw(*worldTransformBlock, viewProjection_);
-			}
-			else if (currentChipType == MapChipType::kMoveBlock)
-			{
-				modelBlock_->Draw(*worldTransformBlock, viewProjection_);
-			}
+			modelTBlock_->Draw(*worldTransformBlock, viewProjection_);
 		}
 	}
 
-	
+	if (player_->isAlive == false) {
+		deathParticle_->Draw();
+	}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion

@@ -13,7 +13,11 @@
 #include "Player.h"
 #include "CameraController.h"
 #include "Enemy.h"
-//#include "DeathParticles.h"
+#include "Bullet.h"
+#include "MoveEnemy.h"
+#include "Skydome.h"
+#include "DeathParticles.h"
+#include <DeathParticles.h>
 
 #ifndef STRUCT_H
 #define STRUCT_H
@@ -75,8 +79,13 @@ private: // メンバ変数
 	Model* modelTBlock_ = nullptr;
 	Model* modelPlayer_ = nullptr;
 	Model* modelEnemy_ = nullptr;
+	Model* modelMoveEnemy_ = nullptr;
+	Model* modelEnemyBullet_ = nullptr;
 	Model* modelDeathParticles_ = nullptr;
-	
+	Model* modelSkydome_ = nullptr;
+
+	// 天球
+	Skydome* skydome_ = nullptr;
 
 	bool isDebugCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
@@ -93,13 +102,19 @@ private: // メンバ変数
 	//Enemy* enemy_ ;
 	//敵の複数化
 	std::list<Enemy*> enemies_;
+	std::list<MoveEnemy*> moveEnemies_;
+	std::list<Bullet*> bullets_;
 	
-	//DeathParticles* deathParticle_ = nullptr;
+	DeathParticles* deathParticle_ = nullptr;
 	//bool isDeachPaticled = true;
 
 	//MapChipType mapChipType;
 	MapChipType currentChipType = MapChipType::kBlock; 
+	MapChipType currentMapChipType = MapChipType::kMoveBlock; 
 	int isB = 0;
+
+	float lifetime = 0.0f;
+	float bulletSpeed = 0.0f;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

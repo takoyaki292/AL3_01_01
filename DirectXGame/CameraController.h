@@ -44,9 +44,9 @@ public:
 
 	struct Rest {
 		float left = 0.0f;
-		float right = 1.0f;
+		float right = 10.0f;
 		float bottom = 0.0f;
-		float top = 1.0f;
+		float top = 10.0f;
 	};
 
 	Rest movableArea_ = {0, 100, 0, 100};
@@ -66,8 +66,9 @@ public:
 	private:
 	ViewProjection* viewProjection_;
 	Player* target_ = nullptr;
-	Vector3 targetOffset_ = {0, 0, -65.0f};
-	Vector3 targetCoordinates = {};
+	//Vector3 targetOffset_ = {0, 10, -45.0f};
+	Vector3 targetOffset_ = {2, 10, -65.0f};
+	Vector3 targetCoordinates = {0,0,0};
 };
 
  
