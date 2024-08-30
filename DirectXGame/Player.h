@@ -151,6 +151,15 @@ public:
 	bool isAlive = true;
 
 	Vector3 playerP_;
+
+	bool IsAlive() const {
+		return isAlive; // プレイヤーの生存状態を保持するメンバ変数
+	}
+
+	bool IsTimeOver() const {
+		return isTimeOver_; // プレイヤーの生存状態を保持するメンバ変数
+	}
+
 private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;
@@ -199,6 +208,10 @@ private:
 	 std::time_t startTime_; // 制限時間の開始時間
 	int timeLimit_;         // 制限時間（秒単位）
 	bool isTimeOver_;       // 時間切れフラグ
-
+	Sprite* timeBarSprite_; // 残り時間を示す棒のスプライト
+	float elapsedTime_;     // 経過時間
+	float maxBarLength_;    // 棒の最大長さ
+	float barHeight_;       // 棒の高さ
+	Vector2 barPosition_;   // 棒の表示位置
 };
 

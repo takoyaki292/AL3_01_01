@@ -1,25 +1,26 @@
-﻿#pragma once
+#pragma once
 #include "Audio.h"
-#include "DirectXCommon.h"
-#include "Input.h"
-#include "Model.h"
-#include "Sprite.h"
 #include "CameraController.h"
 #include "DeathParticles.h"
 #include "DebugCamera.h"
+#include "DirectXCommon.h"
 #include "Enemy.h"
+#include "Input.h"
 #include "MapChipField.h"
+#include "Model.h"
+#include "ClearModel.h"
+#include "titleModel.h"
 #include "Player.h"
+#include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include "titleModel.h"
 #include <vector>
 
 // #include "MapChipField.h"
-class TitleScene {
+class ClearScene {
 public:
-	TitleScene();
-	~TitleScene();
+	ClearScene();
+	~ClearScene();
 
 	/// <summary>
 	/// 初期化
@@ -45,9 +46,9 @@ private:
 	bool finished_ = false;
 
 	ViewProjection viewProjection_ = {};
-	TitleModel* titleModel_ = nullptr;
-	Model* model=nullptr;
+	TitleModel* clearModel_ = nullptr;
+	Model* model = nullptr;
 
-	//uint32_t tH = 0;
-	//Sprite* sprite_ = nullptr;
+	// uint32_t tH = 0;
+	// Sprite* sprite_ = nullptr;
 };

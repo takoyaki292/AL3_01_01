@@ -1,40 +1,30 @@
-#include "TitleScene.h"
-#include <numbers>
-#include <TextureManager.h>
+#include "ClearScene.h"
 
-TitleScene::TitleScene() {}
+ClearScene::ClearScene() {}
 
-TitleScene::~TitleScene() {
-	delete titleModel_;
-	//delete sprite_;
-}
+ClearScene::~ClearScene() { delete clearModel_; }
 
-void TitleScene::Initalize() {
+void ClearScene::Initalize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	model = Model::CreateFromOBJ("GameTitleScene", true);
+	model = Model::CreateFromOBJ("GameClearScene", true);
 
-	titleModel_ = new TitleModel();
-	Vector3 titlePosition = {0.f, 0.f, 0.0f};
+	clearModel_ = new TitleModel();
+	Vector3 clearPosition = {0.f, 0.f, 0.0f};
 	viewProjection_.Initialize();
-	titleModel_->Initalize(model, &viewProjection_, titlePosition);
-
-	//tH = TextureManager::Load("cene.png");
-	//sprite_ = Sprite::Create(tH, {0, 0});
+	clearModel_->Initalize(model, &viewProjection_, clearPosition);
 }
 
-void TitleScene::Update() {
-	if (Input::GetInstance()->TriggerKey(DIK_SPACE) &&
-		    Input::GetInstance()->PushKey(DIK_SPACE)) {
+void ClearScene::Update() {
+	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
 		finished_ = true;
 	}
-	titleModel_->Update();
-
+	clearModel_->Update();
 }
 
-void TitleScene::Draw() {
+void ClearScene::Draw() {
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
@@ -59,9 +49,9 @@ void TitleScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	titleModel_->Draw();
-	//sprite_->Draw();
-	// 3Dオブジェクト描画後処理
+	clearModel_->Draw();
+	// sprite_->Draw();
+	//  3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
 

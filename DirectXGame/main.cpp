@@ -5,30 +5,38 @@
 #include "ImGuiManager.h"
 #include "PrimitiveDrawer.h"
 #include "TextureManager.h"
-#include "TitleScene.h"
 #include "WinApp.h"
+#include "TitleScene.h"
+#include "GameScene.h"
+#include "ClearScene.h"
+#include "OverScene.h"
 
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
-// シーン
-enum class Scene {
+OverScene* overScene = nullptr;
+ClearScene* clearScene = nullptr;
+
+//シーン
+enum class Scene { 
 	kUnkown = 0,
 	kTitle,
 	kGame,
+	kOver,
+	kClear
 };
-// 現在のシーン
+//現在のシーン
 Scene scene = Scene::kUnkown;
 
-// シーン切り替え処理
+//シーン切り替え処理
 void ChageScene();
 
-// シーンの更新
-void UpdateScene();
+//シーンの更新
+void UpdateScene(); 
 
-// シーンの描画
+//シーンの描画
 void DrawScene();
 
-// Windowsアプリでのエントリーポイント(main関数)
+    // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinApp* win = nullptr;
 	DirectXCommon* dxCommon = nullptr;
@@ -37,10 +45,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Audio* audio = nullptr;
 	AxisIndicator* axisIndicator = nullptr;
 	PrimitiveDrawer* primitiveDrawer = nullptr;
-	// GameScene* gameScene = nullptr;
+	//GameScene* gameScene = nullptr;
 	////タイトルシーン
-	// TitleScene* titleScene = nullptr;
-	//  ゲームウィンドウの作成
+	//TitleScene* titleScene = nullptr;
+	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
 	win->CreateGameWindow(L"GC2B_08_シミズ_タクミ");
 
@@ -82,11 +90,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// ゲームシーンの初期化
 	gameScene = new GameScene();
 	gameScene->Initialize();
-	// 最初のシーンの初期化
+	//最初のシーンの初期化
 	scene = Scene::kTitle;
-	// タイトルシーンの初期化
+	//タイトルシーンの初期化
 	titleScene = new TitleScene;
 	titleScene->Initalize();
+
+	overScene = new OverScene;
+	overScene->Initalize();
+
+	clearScene = new ClearScene;
+	clearScene->Initalize();
 	// メインループ
 	while (true) {
 		// メッセージ処理
@@ -99,13 +113,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 入力関連の毎フレーム処理
 		input->Update();
 		////タイトルシーンの毎フレーム処理
-		// titleScene->Update();
-		// シーンの切り替え
+		//titleScene->Update();
+		//シーンの切り替え
 		ChageScene();
-		// 現在のシーン更新
+		//現在のシーン更新
 		UpdateScene();
 		// ゲームシーンの毎フレーム処理
-		// gameScene->Update();
+		//gameScene->Update();
 		// 軸表示の更新
 		axisIndicator->Update();
 		// ImGui受付終了
@@ -114,10 +128,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 描画開始
 		dxCommon->PreDraw();
 		////タイトルシーンの描画
-		// titleScene->Draw();
+		//titleScene->Draw();
 		DrawScene();
 		// ゲームシーンの描画
-		// gameScene->Draw();
+		//gameScene->Draw();
 		// 軸表示の描画
 		axisIndicator->Draw();
 		// プリミティブ描画のリセット
@@ -131,6 +145,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 各種解放
 	delete gameScene;
 	delete titleScene;
+	delete overScene;
+	delete clearScene;
 	// 3Dモデル解放
 	Model::StaticFinalize();
 	audio->Finalize();
@@ -149,7 +165,7 @@ void ChageScene() {
 		if (titleScene->IsFinished()) {
 			scene = Scene::kGame;
 
-			// タイトルシーンの開放
+			//タイトルシーンの開放
 			delete titleScene;
 			titleScene = nullptr;
 
@@ -158,17 +174,57 @@ void ChageScene() {
 		}
 		break;
 	case Scene::kGame:
-		if (gameScene->IsFinished()) {
-			scene = Scene::kTitle;
+		
+		if (gameScene->IsTimeOver())
+		{
+			scene = Scene::kClear;
 
 			// ゲームシーンの開放
 			delete gameScene;
 			gameScene = nullptr;
 
+			clearScene = new ClearScene();
+			clearScene->Initalize();
+		}
+		else if (!gameScene->IsPlayerAlive())
+		{
+			scene = Scene::kOver;
+
+			// ゲームシーンの開放
+			delete gameScene;
+			gameScene = nullptr;
+
+			overScene = new OverScene();
+			overScene->Initalize();
+		}
+		
+		
+		break;
+	case Scene::kOver:
+		if (overScene->IsFinished()) {
+			scene = Scene::kTitle;
+
+			// ゲームシーンの開放
+			delete overScene;
+			overScene = nullptr;
+
 			titleScene = new TitleScene();
 			titleScene->Initalize();
 		}
 		break;
+	case Scene::kClear:
+		if (clearScene->IsFinished()) {
+			scene = Scene::kTitle;
+
+			// ゲームシーンの開放
+			delete clearScene;
+			clearScene = nullptr;
+
+			titleScene = new TitleScene();
+			titleScene->Initalize();
+		}
+		break;
+	
 	}
 }
 
@@ -180,6 +236,13 @@ void UpdateScene() {
 	case Scene::kGame:
 		gameScene->Update();
 		break;
+	case Scene::kOver:
+		overScene->Update();
+		break;
+	case Scene::kClear:
+		clearScene->Update();
+		break;
+	
 	}
 }
 
@@ -190,6 +253,12 @@ void DrawScene() {
 		break;
 	case Scene::kGame:
 		gameScene->Draw();
+		break;
+	case Scene::kOver:
+		overScene->Draw();
+		break;
+	case Scene::kClear:
+		clearScene->Draw();
 		break;
 	}
 }

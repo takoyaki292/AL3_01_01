@@ -1,40 +1,32 @@
-#include "TitleScene.h"
-#include <numbers>
-#include <TextureManager.h>
+#include "OverScene.h"
 
-TitleScene::TitleScene() {}
+OverScene::OverScene() {}
 
-TitleScene::~TitleScene() {
-	delete titleModel_;
-	//delete sprite_;
-}
+OverScene::~OverScene() { delete overModel_; }
 
-void TitleScene::Initalize() {
+void OverScene::Initalize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	model = Model::CreateFromOBJ("GameTitleScene", true);
+	model = Model::CreateFromOBJ("GameOverScene", true);
 
-	titleModel_ = new TitleModel();
-	Vector3 titlePosition = {0.f, 0.f, 0.0f};
+	overModel_ = new TitleModel();
+	Vector3 overPosition = {0.f, 0.f, 0.0f};
 	viewProjection_.Initialize();
-	titleModel_->Initalize(model, &viewProjection_, titlePosition);
-
-	//tH = TextureManager::Load("cene.png");
-	//sprite_ = Sprite::Create(tH, {0, 0});
+	overModel_->Initalize(model, &viewProjection_, overPosition);
 }
 
-void TitleScene::Update() {
+void OverScene::Update() {
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE) &&
-		    Input::GetInstance()->PushKey(DIK_SPACE)) {
+	    Input::GetInstance()->PushKey(DIK_SPACE)) {
 		finished_ = true;
 	}
-	titleModel_->Update();
-
+	overModel_->Update();
 }
 
-void TitleScene::Draw() {
+void OverScene::Draw() 
+{
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
@@ -59,9 +51,9 @@ void TitleScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	titleModel_->Draw();
-	//sprite_->Draw();
-	// 3Dオブジェクト描画後処理
+	overModel_->Draw();
+	// sprite_->Draw();
+	//  3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
 

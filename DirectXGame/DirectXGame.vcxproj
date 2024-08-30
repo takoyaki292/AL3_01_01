@@ -112,6 +112,8 @@
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="CameraController.cpp" />
+    <ClCompile Include="ClearModel.cpp" />
+    <ClCompile Include="ClearScene.cpp" />
     <ClCompile Include="DeathObject.cpp" />
     <ClCompile Include="DeathParticles.cpp" />
     <ClCompile Include="Enemy.cpp" />
@@ -119,6 +121,8 @@
     <ClCompile Include="MapChipField.cpp" />
     <ClCompile Include="math\Vector3.cpp" />
     <ClCompile Include="MoveEnemy.cpp" />
+    <ClCompile Include="OverModel.cpp" />
+    <ClCompile Include="OverScene.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="Skydome.cpp" />
@@ -151,6 +155,8 @@
     <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="CameraController.h" />
+    <ClInclude Include="ClearModel.h" />
+    <ClInclude Include="ClearScene.h" />
     <ClInclude Include="DeathObject.h" />
     <ClInclude Include="DeathParticles.h" />
     <ClInclude Include="Enemy.h" />
@@ -161,6 +167,8 @@
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
     <ClInclude Include="MoveEnemy.h" />
+    <ClInclude Include="OverModel.h" />
+    <ClInclude Include="OverScene.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="Skydome.h" />

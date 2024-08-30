@@ -30,6 +30,8 @@ public:
 	/// </summary>
 	void Draw();
 
+	
+
 private:
 	Matrix4x4 MakeRotateZMatrix(float radian);
 	Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);

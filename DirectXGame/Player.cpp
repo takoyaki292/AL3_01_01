@@ -24,12 +24,21 @@ void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vecto
 
 	viewProjection_ = viewProjection;
 	playerModel_ = model;
-	startTime_=0; 
-	timeLimit_=5;         
+	startTime_=0;       
 	isTimeOver_=false; 
 
 	isAlive = true;
 
+	
+	timeLimit_ = 60.0f;            // 60秒の制限時間
+	elapsedTime_ = 0.0f;           // 経過時間の初期化
+	maxBarLength_ = 200.0f;        // 棒の最大長さ（ピクセル単位）
+	barHeight_ = 20.0f;            // 棒の高さ（ピクセル単位）
+	barPosition_ = {50.0f, 50.0f}; // 棒の表示位置
+	uint32_t textureHandle = TextureManager::Load("bar_texture.png"); // テクスチャをロード
+	timeBarSprite_ = Sprite::Create(textureHandle, barPosition_);
+	// 60秒の制限時間を設定
+	StartTimer(30);
 }
 
 void Player::Update() {
@@ -86,10 +95,7 @@ void Player::Update() {
 				velocity_ += Vector3(0, kJumpAcceleration, 0);
 			}
 		}
-		if (Input::GetInstance()->TriggerKey(DIK_A)) {
-			// 5秒の制限時間を設定
-			StartTimer(5);
-		}
+		
 
 		// 移動量を加味して衝突判定
 		CollisonMapInfo info;
@@ -110,6 +116,7 @@ void Player::Update() {
 			// 接地状態の切り替え
 			landing(info);
 		}
+		
 		CheckTimeLimit(); // 時間制限のチェック
 
 		// 旋回制御
@@ -458,6 +465,7 @@ void Player::OnCollisionMoveEnemy(const MoveEnemy* moveEnemy) {
 }
 
 void Player::CheckTimeLimit() {
+	
 	if (!isTimeOver_) {
 		std::time_t currentTime = std::time(nullptr);
 		if (std::difftime(currentTime, startTime_) >= timeLimit_) {

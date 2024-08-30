@@ -179,8 +179,8 @@ void GameScene::Initialize() {
 	for (uint32_t i = 0; i < 3; i++)
 	{
 		MoveEnemy* newMoveEnemy = new MoveEnemy();
-		Vector3 enemyPosition = {16.f + 20 * i, 2.f, 0};
-		newMoveEnemy->Initalize(modelMoveEnemy_, &viewProjection_, enemyPosition);
+		Vector3 moveEnemyPosition = {36.f + 30 * i, 2.f, 0};
+		newMoveEnemy->Initalize(modelMoveEnemy_, &viewProjection_, moveEnemyPosition);
 		moveEnemies_.push_back(newMoveEnemy);
 	}
 	////パーティクルをnewする
@@ -245,9 +245,13 @@ void GameScene::Update() {
 		deathParticle_->Update();
 	} 
 	else {
+	
 		//Vector3 playerPosition = player_->v;
 		//// デスパーティクルを初期化する
 		//deathParticle_->Initalize(modelDeathParticles_, &viewProjection_,playerPosition );
+	}
+	if (Input::GetInstance()->PushKey(DIK_1)) {
+		finished_ = true;
 	}
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {
@@ -368,3 +372,6 @@ int GameScene::switching(MapChipType mapChipNumber) {
 	}
 	return num;
 }
+
+
+//bool GameScene::GetPlayer() { isA = player_->isAlive; }

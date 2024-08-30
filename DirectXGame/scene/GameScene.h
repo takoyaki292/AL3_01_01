@@ -69,6 +69,17 @@ public: // メンバ関数
 	
 	int switching(MapChipType mapChipNumber);
 
+	bool IsFinished() const { return finished_; };
+
+	
+	bool IsPlayerAlive() const {
+		// プレイヤーオブジェクトが存在し、かつ生存しているかどうかをチェック
+		return player_ != nullptr && player_->IsAlive();
+	}
+	bool IsTimeOver() const {
+		return player_->IsTimeOver(); // プレイヤーの時間切れ状態を返す
+	}
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -115,6 +126,10 @@ private: // メンバ変数
 
 	float lifetime = 0.0f;
 	float bulletSpeed = 0.0f;
+	bool finished_ = false;
+
+	//TextureManager
+	bool isA = true;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

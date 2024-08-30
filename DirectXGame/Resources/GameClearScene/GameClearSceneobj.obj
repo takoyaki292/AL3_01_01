@@ -1,6 +1,6 @@
 # Blender 4.1.1
 # www.blender.org
-mtllib GameTitleScene.mtl
+mtllib GameClearSceneobj.mtl
 o テキスト.001
 v -5.593501 -8.113428 -0.400000
 v -5.593501 -9.246428 -0.400000
