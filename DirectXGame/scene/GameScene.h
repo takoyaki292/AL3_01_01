@@ -55,6 +55,8 @@ private: // メンバ変数
 	//ワールドトランスフォームとビュープロジェクション
 	WorldTransform worldTransform_;
 	ViewProjection ViewProjection_;
+	uint32_t soundDateHandle_ = 0;
+	uint32_t voiceHandle_ = 0;
 
 	Player* player_ = nullptr;
 	/// <summary>

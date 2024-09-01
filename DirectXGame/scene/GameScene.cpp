@@ -21,7 +21,10 @@ void GameScene::Initialize() {
 	
 	//3Dモデルの作成
 	model_ = Model::Create();
+	soundDateHandle_ = audio_->LoadWave("fanfare.wav");
 
+	audio_->PlayWave(soundDateHandle_);
+	voiceHandle_ = audio_->PlayWave(soundDateHandle_, true);
 	//ビューの初期化
 	ViewProjection_.Initialize();
 
@@ -29,7 +32,12 @@ void GameScene::Initialize() {
 	player_->Initialize(model_,playerHandle_,&ViewProjection_);
 }
 
-void GameScene::Update() { player_->Update(); }	
+void GameScene::Update() { 
+	 if (input_->TriggerKey(DIK_SPACE))
+	{
+		audio_->StopWave(voiceHandle_);
+	 }
+	player_->Update(); }	
 
 void GameScene::Draw() {
 
