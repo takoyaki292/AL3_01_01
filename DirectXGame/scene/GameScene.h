@@ -132,7 +132,8 @@ private: // メンバ変数
 
 	//TextureManager
 	bool isA = true;
-	uint32_t soundDateHandle_ = 0;
+	//uint32_t soundDateHandle_ = 0;
+	//uint32_t voiceHandle_ = 0;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

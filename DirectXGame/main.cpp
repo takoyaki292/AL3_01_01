@@ -106,6 +106,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	explanationScene = new ExplanationScene;
 	explanationScene->Initalize();
+
+	uint32_t soundDateHandle_ = 0;
+	uint32_t voiceHandle_ = 0;
+
+	soundDateHandle_ = audio->LoadWave("GameAudio.mp4");
+
+	audio->PlayWave(soundDateHandle_);
+	voiceHandle_ = audio->PlayWave(soundDateHandle_, true);
 	// メインループ
 	while (true) {
 		// メッセージ処理

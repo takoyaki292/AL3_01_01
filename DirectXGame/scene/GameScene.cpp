@@ -209,7 +209,7 @@ void GameScene::Initialize() {
 	deathParticle_->Initalize(modelDeathParticles_,&viewProjection_,playerPosition);
 
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
-	soundDateHandle_ = audio_->LoadWave("fanfare.wav");
+	//soundDateHandle_ = audio_->LoadWave("fanfare.wav");
 }
 
 void GameScene::Update() {
