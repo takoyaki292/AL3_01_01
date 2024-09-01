@@ -14,6 +14,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <Input.h>
+#include <PrimitiveDrawer.h>
 void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vector3& position)
 {
 	worldTransform_.Initialize();
@@ -26,19 +27,12 @@ void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vecto
 	playerModel_ = model;
 	startTime_=0;       
 	isTimeOver_=false; 
-
 	isAlive = true;
-
-	
-	timeLimit_ = 60.0f;            // 60秒の制限時間
-	elapsedTime_ = 0.0f;           // 経過時間の初期化
-	maxBarLength_ = 200.0f;        // 棒の最大長さ（ピクセル単位）
-	barHeight_ = 20.0f;            // 棒の高さ（ピクセル単位）
-	barPosition_ = {50.0f, 50.0f}; // 棒の表示位置
-	uint32_t textureHandle = TextureManager::Load("bar_texture.png"); // テクスチャをロード
-	timeBarSprite_ = Sprite::Create(textureHandle, barPosition_);
+	timeLimit_ = 30.f;
 	// 60秒の制限時間を設定
-	StartTimer(30);
+	StartTimer(timeLimit_);
+
+
 }
 
 void Player::Update() {
@@ -88,7 +82,7 @@ void Player::Update() {
 		}
 		if (isJ == false) {
 			// 上キー押していたら
-			if (Input::GetInstance()->TriggerKey(DIK_UP)) {
+			if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 				isJ = true;
 
 				// ジャンプの加速度
@@ -116,7 +110,10 @@ void Player::Update() {
 			// 接地状態の切り替え
 			landing(info);
 		}
-		
+		// 経過時間を更新
+		std::time_t currentTime = std::time(nullptr); // 現在の時間を取得
+		elapsedTime_ = static_cast<float>(std::difftime(currentTime, startTime_)); // 経過時間を計算
+
 		CheckTimeLimit(); // 時間制限のチェック
 
 		// 旋回制御
@@ -131,6 +128,7 @@ void Player::Update() {
 void Player::Draw() { 
 	if (isAlive == true)
 	{
+		
 		playerModel_->Draw(worldTransform_, *viewProjection_); 
 	}
 }
@@ -447,7 +445,7 @@ AABB Player::GetAABB() {
 void Player::OnCollision(const Enemy* enemy) { 
 	(void)enemy;
 	DebugText::GetInstance()->ConsolePrintf("enemy ceiling\n\n");
-	velocity_ += Vector3(0,0.1f,0);
+	//velocity_ += Vector3(0,0.1f,0);
 	isAlive = false;
 }
 
@@ -461,14 +459,13 @@ void Player::OnCollisionBullet(const Bullet* bullet) {
 void Player::OnCollisionMoveEnemy(const MoveEnemy* moveEnemy) { 
 	(void)moveEnemy;
 	DebugText::GetInstance()->ConsolePrintf("moveEnemy ceiling\n\n");
-	//isAlive = false;
+	isAlive = false;
 }
 
 void Player::CheckTimeLimit() {
 	
 	if (!isTimeOver_) {
-		std::time_t currentTime = std::time(nullptr);
-		if (std::difftime(currentTime, startTime_) >= timeLimit_) {
+		if (elapsedTime_ >= timeLimit_) {
 			isTimeOver_ = true;
 			OnTimeOver(); // 時間切れ時の処理を呼び出す
 		}
@@ -478,7 +475,7 @@ void Player::CheckTimeLimit() {
 void Player::OnTimeOver() { 
 	DebugText::GetInstance()->ConsolePrintf("time Over\n\n"); }
 
-void Player::StartTimer(int duration) {
+void Player::StartTimer(float duration) {
 	startTime_ = std::time(nullptr); // 現在の時間を取得
 	timeLimit_ = duration;           // 制限時間を設定
 	isTimeOver_ = false;             // 時間切れフラグをリセット

@@ -21,6 +21,8 @@ struct Vector3 final {
 		z = this->z - num.z;
 		return *this;
 	}
+	// スカラーとの積を定義
+	Vector3 operator*(float scalar) const { return Vector3(x * scalar, y * scalar, z * scalar); }
 };
 
 inline Vector3 operator+(const Vector3& num, const Vector3& twoNum){ 

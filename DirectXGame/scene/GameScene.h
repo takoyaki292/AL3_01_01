@@ -80,6 +80,8 @@ public: // メンバ関数
 		return player_->IsTimeOver(); // プレイヤーの時間切れ状態を返す
 	}
 
+	void DrawTimeBar();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -130,6 +132,7 @@ private: // メンバ変数
 
 	//TextureManager
 	bool isA = true;
+	uint32_t soundDateHandle_ = 0;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

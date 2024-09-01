@@ -17,7 +17,8 @@ public:
 	/// 初期化
 	/// </summary>
 	void Initalize(
-	    Model* model, ViewProjection* viewProjection, const Vector3& position,float lifetime,float speed);
+	    Model* model, ViewProjection* viewProjection, const Vector3& position, float lifetime,
+	    float speed, const Vector3& direction);
 
 	/// <summary>
 	/// 処理
@@ -38,6 +39,8 @@ public:
 
 	void Reset();
 
+	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
+
 private:
 	WorldTransform worldTransform_;
 	// WorldTransform bulletWorldTransform_;
@@ -52,4 +55,5 @@ private:
 	//MapChipField* mapChipField_;
 	Vector3 initialPosition_;
 	bool isBullet_;
+	Vector3 direction_;
 };

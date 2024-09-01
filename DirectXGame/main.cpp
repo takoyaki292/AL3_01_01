@@ -10,16 +10,18 @@
 #include "GameScene.h"
 #include "ClearScene.h"
 #include "OverScene.h"
+#include "ExplanationScene.h"
 
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
 OverScene* overScene = nullptr;
 ClearScene* clearScene = nullptr;
-
-//シーン
+ExplanationScene* explanationScene = nullptr;
+    //シーン
 enum class Scene { 
 	kUnkown = 0,
-	kTitle,
+	kTitle, 
+	kExplanation,
 	kGame,
 	kOver,
 	kClear
@@ -101,6 +103,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	clearScene = new ClearScene;
 	clearScene->Initalize();
+
+	explanationScene = new ExplanationScene;
+	explanationScene->Initalize();
 	// メインループ
 	while (true) {
 		// メッセージ処理
@@ -147,6 +152,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete titleScene;
 	delete overScene;
 	delete clearScene;
+	delete explanationScene;
 	// 3Dモデル解放
 	Model::StaticFinalize();
 	audio->Finalize();
@@ -163,14 +169,46 @@ void ChageScene() {
 	switch (scene) {
 	case Scene::kTitle:
 		if (titleScene->IsFinished()) {
-			scene = Scene::kGame;
+			if (titleScene->GetSelectedOption() == TitleOption::kStartGame) {
+				scene = Scene::kGame;
+				delete titleScene;
+				titleScene = nullptr;
 
-			//タイトルシーンの開放
+				gameScene = new GameScene();
+				gameScene->Initialize();
+			} else if (titleScene->GetSelectedOption() == TitleOption::kExplanation) {
+				scene = Scene::kExplanation;
+				delete titleScene;
+				titleScene = nullptr;
+
+				explanationScene = new ExplanationScene();
+				explanationScene->Initalize();
+			}
+		}
+		else if (titleScene->IsEFinished())
+		{
+			scene = Scene::kExplanation;
+
+			// タイトルシーンの開放
 			delete titleScene;
 			titleScene = nullptr;
 
-			gameScene = new GameScene();
-			gameScene->Initialize();
+			explanationScene = new ExplanationScene();
+			explanationScene->Initalize();
+		}
+
+		break;
+	case Scene::kExplanation:
+		if (explanationScene->IsFinished()) {
+			scene = Scene::kTitle;
+
+			// 説明シーンの開放
+			delete explanationScene;
+			explanationScene = nullptr;
+
+			// タイトルシーンの初期化
+			titleScene = new TitleScene();
+			titleScene->Initalize();
 		}
 		break;
 	case Scene::kGame:
@@ -233,6 +271,9 @@ void UpdateScene() {
 	case Scene::kTitle:
 		titleScene->Update();
 		break;
+	case Scene::kExplanation:
+		explanationScene->Update();
+		break;
 	case Scene::kGame:
 		gameScene->Update();
 		break;
@@ -250,6 +291,9 @@ void DrawScene() {
 	switch (scene) {
 	case Scene::kTitle:
 		titleScene->Draw();
+		break;
+	case Scene::kExplanation:
+		explanationScene->Draw();
 		break;
 	case Scene::kGame:
 		gameScene->Draw();

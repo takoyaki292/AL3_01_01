@@ -1,26 +1,26 @@
-﻿#pragma once
+#pragma once
 #include "Audio.h"
-#include "DirectXCommon.h"
-#include "Input.h"
-#include "Model.h"
-#include "Sprite.h"
 #include "CameraController.h"
 #include "DeathParticles.h"
 #include "DebugCamera.h"
+#include "DirectXCommon.h"
 #include "Enemy.h"
+#include "Input.h"
 #include "MapChipField.h"
+#include "Model.h"
+#include "OverModel.h"
 #include "Player.h"
+#include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "titleModel.h"
 #include <vector>
 
-enum class TitleOption { kStartGame, kExplanation };
 // #include "MapChipField.h"
-class TitleScene {
+class ExplanationScene {
 public:
-	TitleScene();
-	~TitleScene();
+	ExplanationScene();
+	~ExplanationScene();
 
 	/// <summary>
 	/// 初期化
@@ -36,9 +36,7 @@ public:
 	/// </summary>
 	void Draw();
 
-	bool IsFinished() const { return finished_; };
-	bool IsEFinished() const { return eFinished_; };
-	TitleOption GetSelectedOption() const;
+	bool IsFinished() const { return finished_; }
 
 private:
 	DirectXCommon* dxCommon_ = nullptr;
@@ -46,15 +44,11 @@ private:
 	Audio* audio_ = nullptr;
 	// 終了フラグ
 	bool finished_ = false;
-	bool eFinished_ = false;
 
 	ViewProjection viewProjection_ = {};
-	TitleModel* titleModel_ = nullptr;
-	TitleModel* setumeiModel_ = nullptr;
-	Model* model=nullptr;
-	Model* titleGameModel=nullptr;
+	TitleModel* explanationModel_ = nullptr;
+	Model* model = nullptr;
 
-	TitleOption selectedOption_ = TitleOption::kStartGame; 
-	//uint32_t tH = 0;
-	//Sprite* sprite_ = nullptr;
+	// uint32_t tH = 0;
+	// Sprite* sprite_ = nullptr;
 };

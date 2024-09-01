@@ -15,23 +15,35 @@ void TitleScene::Initalize() {
 	audio_ = Audio::GetInstance();
 
 	model = Model::CreateFromOBJ("GameTitleScene", true);
-
+	titleGameModel = Model::CreateFromOBJ("titleGame", true);
+	
 	titleModel_ = new TitleModel();
+	setumeiModel_ = new TitleModel();
 	Vector3 titlePosition = {0.f, 0.f, 0.0f};
 	viewProjection_.Initialize();
-	titleModel_->Initalize(model, &viewProjection_, titlePosition);
-
-	//tH = TextureManager::Load("cene.png");
-	//sprite_ = Sprite::Create(tH, {0, 0});
+	titleModel_->Initalize(titleGameModel, &viewProjection_, titlePosition);
+	setumeiModel_->Initalize(model, &viewProjection_, titlePosition);
 }
 
 void TitleScene::Update() {
-	if (Input::GetInstance()->TriggerKey(DIK_SPACE) &&
-		    Input::GetInstance()->PushKey(DIK_SPACE)) {
-		finished_ = true;
+	if (input_->TriggerKey(DIK_UP)) {
+		selectedOption_ = TitleOption::kStartGame;
+	} else if (input_->TriggerKey(DIK_DOWN)) {
+		selectedOption_ = TitleOption::kExplanation;
 	}
-	titleModel_->Update();
 
+	if (Input::GetInstance()->TriggerKey(DIK_SPACE) &&
+		    Input::GetInstance()->PushKey(DIK_SPACE)) 
+	{
+		if (selectedOption_ == TitleOption::kStartGame) {
+			finished_ = true;
+		} else if (selectedOption_ == TitleOption::kExplanation) {
+			eFinished_ = true;
+		}
+	}
+	
+	titleModel_->Update();
+	setumeiModel_->Update();
 }
 
 void TitleScene::Draw() {
@@ -59,7 +71,15 @@ void TitleScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	titleModel_->Draw();
+	if (selectedOption_ == TitleOption::kStartGame) {
+		titleModel_->Draw();
+	}
+	else if (selectedOption_ == TitleOption::kExplanation)
+	{
+		setumeiModel_->Draw();
+	}
+	
+	
 	//sprite_->Draw();
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -78,3 +98,5 @@ void TitleScene::Draw() {
 
 #pragma endregion
 }
+
+TitleOption TitleScene::GetSelectedOption() const { return selectedOption_; }

@@ -62,7 +62,7 @@ private:
 
 	MapChipField* mapChipField_ = nullptr;
 	// 敵の歩き速度
-	static inline const float kWalkSpeed = 0.05f;
+	static inline const float kWalkSpeed = 0.08f;
 	// 移動量
 	Vector3 velocity_ = {};
 

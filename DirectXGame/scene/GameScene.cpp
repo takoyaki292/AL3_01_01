@@ -5,6 +5,7 @@
 #include "MoveEnemy.h"
 #include "TextureManager.h"
 #include <cassert>
+#include <PrimitiveDrawer.h>
 
 GameScene::GameScene() {}
 
@@ -159,27 +160,44 @@ void GameScene::Initialize() {
 	modelMoveEnemy_ = Model::CreateFromOBJ("moveEnemyModel", true);
 	lifetime = 700.f;
 	//張り付いてくる敵
-	for (uint32_t i = 0; i <6; ++i) {
-		if (i % 2 == 0)
-		{
-			bulletSpeed = 0.005f;
+	for (uint32_t i = 0; i < 6; ++i) {
+		if (i % 2 == 0) {
+			bulletSpeed = 0.015f;
 		} else {
-			bulletSpeed = 0.010f;
+			bulletSpeed = 0.020f;
 		}
-		Enemy* newEnemy = new Enemy();
-		Bullet* newBullet = new Bullet();
-		Vector3 enemyPosition = {16.f+ 16* i, 28.f, 0};
-		Vector3 bulletPosition = {16.f+ 16 * i, 26.f, 0};
-		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
-		newBullet->Initalize(modelEnemyBullet_, &viewProjection_, bulletPosition,lifetime,bulletSpeed);
-		enemies_.push_back(newEnemy);
-		bullets_.push_back(newBullet);
-	}
 
-	for (uint32_t i = 0; i < 3; i++)
+		Enemy* newEnemy = new Enemy();
+		Vector3 enemyPosition = {16.f + 16 * i, 28.f, 0};
+		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
+		enemies_.push_back(newEnemy);
+
+		for (uint32_t j = 0; j < 3; ++j) { // 各敵に対して3つの弾を生成
+			Bullet* newBullet = new Bullet();
+			Vector3 bulletPosition = {16.f + 16 * i, 26.f, 0}; // 弾の位置を調整
+			Vector3 direction;
+			if (j == 0) {
+				// 1つ目の弾は真っ直ぐ下に飛ばす
+				direction = {0.0f, -1.0f, 0.0f};
+			} else if (j == 1) {
+				// 2つ目の弾を左斜め下に飛ばす
+				direction = {-0.7f, -1.0f, 0.0f};
+			} else if (j == 2) {
+				// 3つ目の弾を右斜め下に飛ばす
+				direction = {0.7f, -1.0f, 0.0f};
+			}
+
+			newBullet->Initalize(
+			    modelEnemyBullet_, &viewProjection_, bulletPosition, lifetime, bulletSpeed,
+			    direction);
+			bullets_.push_back(newBullet);
+		}
+	}
+	
+	for (uint32_t i = 0; i < 4; i++)
 	{
 		MoveEnemy* newMoveEnemy = new MoveEnemy();
-		Vector3 moveEnemyPosition = {36.f + 30 * i, 2.f, 0};
+		Vector3 moveEnemyPosition = {20.f + 25 * i, 2.f, 0};
 		newMoveEnemy->Initalize(modelMoveEnemy_, &viewProjection_, moveEnemyPosition);
 		moveEnemies_.push_back(newMoveEnemy);
 	}
@@ -189,6 +207,9 @@ void GameScene::Initialize() {
 	modelDeathParticles_ = Model::CreateFromOBJ("playerModel", true);
 	//デスパーティクルを初期化する
 	deathParticle_->Initalize(modelDeathParticles_,&viewProjection_,playerPosition);
+
+	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
+	soundDateHandle_ = audio_->LoadWave("fanfare.wav");
 }
 
 void GameScene::Update() {
@@ -218,9 +239,9 @@ void GameScene::Update() {
 			for (Bullet* bullet : bullets_) {
 				if (!bullet) {
 					continue;
-				} else {
-					bullet->Update();
 				}
+
+				bullet->Update();
 			}
 			enemy->Update();
 			CheckAllCollisios();
@@ -276,7 +297,8 @@ void GameScene::Draw() {
 
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-
+	
+	
 #pragma region 背景スプライト描画
 	// 背景スプライト描画前処理
 	Sprite::PreDraw(commandList);
@@ -298,7 +320,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	/// 
 	skydome_->Draw();
+	
 	player_->Draw();
 	for (Enemy* enemy : enemies_) {
 		if (!enemy) {
@@ -307,12 +331,11 @@ void GameScene::Draw() {
 		enemy->Draw();
 		}
 		for (Bullet* bullet : bullets_) {
-			if (!bullet) {
-				continue;
-			} else {
+			if (bullet) { // nullptr ではない弾を描画
 				bullet->Draw();
 			}
 		}
+
 		
 	}
 	for (MoveEnemy* moveEnemy : moveEnemies_) {
@@ -341,7 +364,8 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
-
+	// 残り時間を示す棒の描画
+	DrawTimeBar();
 #pragma region 前景スプライト描画
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(commandList);
@@ -371,6 +395,24 @@ int GameScene::switching(MapChipType mapChipNumber) {
 		break;
 	}
 	return num;
+}
+
+void GameScene::DrawTimeBar() {
+		// プレイヤーの残り時間を取得
+		float elapsedTime = player_->GetElapsedTime();
+		float timeLimit = player_->GetTimeLimit();
+	    float maxBarLength_ = 50.f;
+		// 残り時間に応じて棒の長さを計算
+		float barLength = maxBarLength_ * (1.0f - elapsedTime / timeLimit);
+
+	
+		// 棒を描画
+	    for (int i = 0; i < 10; i++) {
+		    PrimitiveDrawer::GetInstance()->DrawLine3d(
+		        {20.0f, 70.0f + i * 0.1f, 100.0f}, {20.0f + barLength, 70.0f + i * 0.1f, 100.0f},
+		        {0.0f, 0.0f, 0.0f, 1.0f});
+		}
+		
 }
 
 

@@ -67,7 +67,7 @@ public:
 	ViewProjection* viewProjection_;
 	Player* target_ = nullptr;
 	//Vector3 targetOffset_ = {0, 10, -45.0f};
-	Vector3 targetOffset_ = {2, 10, -65.0f};
+	Vector3 targetOffset_ = {2, 15, -62.0f};
 	Vector3 targetCoordinates = {0,0,0};
 };
 

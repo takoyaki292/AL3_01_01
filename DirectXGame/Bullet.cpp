@@ -2,27 +2,30 @@
 #include "Enemy.h"
 //Bullet::Bullet() {}
 
+
+
 void Bullet::Initalize(
-    Model* model, ViewProjection* viewProjection, const Vector3& position, float lifetime,float speed) {
+    Model* model, ViewProjection* viewProjection, const Vector3& position, float lifetime,
+    float speed, const Vector3& direction) {
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
-	initialPosition_ = position; // 初期位置を保存
+	initialPosition_ = position;
 	viewProjection_ = viewProjection;
 	bulletModel_ = model;
 	lifetime_ = lifetime;
 	speed_ = speed;
+	direction_ = direction;        // 外部から方向を設定
+	velocity_ = direction * speed; // 速度を設定
 	isBullet_ = true;
 }
 
 void Bullet::Update() {
-	velocity_ += Vector3(0,speed_/60.0f,0.0f);
-	worldTransform_.translation_.y-= velocity_.y;
+	
+	//velocity_ += Vector3(0,speed_/60.0f,0.0f);
+	worldTransform_.translation_+= velocity_;
+	//worldTransform_.translation_.x+= velocity_.x;
 	
 	
-	if (!isBullet_)
-	{
-		return;
-	}
 	if (IsOutOfBounds()) {
 		Reset();
 	} 
@@ -50,12 +53,22 @@ void Bullet::Draw() {
 }
 
 bool Bullet::IsOutOfBounds() const {
-	const float screenWidth = 1280.0f;
+	//const float screenWidth = 1280.0f;
 	const float screenHeight = 720.0f;
 
-	return worldTransform_.translation_.x < 2 || worldTransform_.translation_.x > screenWidth ||
-	       worldTransform_.translation_.y < 2 || worldTransform_.translation_.y > screenHeight ||
-	       lifetime_ <= 0.0f;
+	// X方向の画面外判定
+	bool outOfBoundsX =
+	    (worldTransform_.translation_.x < 14.0f) || (worldTransform_.translation_.x > 100);
+
+	// Y方向の画面外判定
+	bool outOfBoundsY =
+	    (worldTransform_.translation_.y < 2.0f) || (worldTransform_.translation_.y > screenHeight);
+
+	// 寿命切れの判定
+	bool lifetimeExpired = (lifetime_ <= 0.0f);
+
+	// いずれかの条件を満たす場合、画面外または寿命切れと判定
+	return outOfBoundsX || outOfBoundsY || lifetimeExpired;
 }
 
 
@@ -79,10 +92,9 @@ Vector3 Bullet::GetWorldPosition() {
 	return worldPos;
 }
 void Bullet::Reset() {
-	worldTransform_.translation_ = initialPosition_;
-	lifetime_ = 700.0f;
-	isBullet_ = true;
-	velocity_ = {0.f, 0.f, 0.f};
+	worldTransform_.translation_ = initialPosition_; 
+	lifetime_ = 700.0f;                              
+	isBullet_ = true;                                
 }
 void Bullet::OnCollisiton(const Player* player) { 
 	(void)player;
