@@ -13,6 +13,7 @@
 #include "Player.h"
 #include "CameraController.h"
 #include "Enemy.h"
+#include "moveEnemy.h"
 //#include "DeathParticles.h"
 
 #ifndef STRUCT_H
@@ -73,6 +74,7 @@ private: // メンバ変数
 	Model* modelBlock_ = nullptr;
 	Model* modelPlayer_ = nullptr;
 	Model* modelEnemy_ = nullptr;
+	Model* modelMoveEnemy_ = nullptr;
 	Model* modelDeathParticles_ = nullptr;
 	
 
@@ -91,11 +93,12 @@ private: // メンバ変数
 	//Enemy* enemy_ ;
 	//敵の複数化
 	std::list<Enemy*> enemies_;
+	std::list<MoveEnemy*> moveEnemies_;
 	
 	//DeathParticles* deathParticle_ = nullptr;
 	//bool isDeachPaticled = true;
 
-
+	//Vector3 enemyDirection = {};
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

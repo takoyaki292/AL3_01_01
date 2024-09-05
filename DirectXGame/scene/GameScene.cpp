@@ -65,7 +65,10 @@ GameScene::~GameScene() {
 		delete kEnemy;
 		// delete newEnemy;
 	}
-
+	for (MoveEnemy* kMoveEnemy : moveEnemies_)
+	{
+		delete kMoveEnemy;
+	}
 	//delete deathParticle_;
 }
 
@@ -109,9 +112,17 @@ void GameScene::Initialize() {
 	modelEnemy_ = Model::CreateFromOBJ("playerModel", true);
 	for (uint32_t i = 0; i < 1; ++i) {
 		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = {10.f+ 4 * i, 2.f, 0};
+		Vector3 enemyPosition = {0.f+ 4 * i, 2.f, 0};
 		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
 		enemies_.push_back(newEnemy);
+	}
+	modelMoveEnemy_ = Model::CreateFromOBJ("playerModel", true);
+	for (uint32_t i = 0; i < 3; ++i)
+	{
+		MoveEnemy* newMoveEnmey = new MoveEnemy();
+		Vector3 enemyPosition = {20.f + 4 * i, 10.f, 0};
+		newMoveEnmey->Initalize(modelMoveEnemy_, &viewProjection_, enemyPosition);
+		moveEnemies_.push_back(newMoveEnmey);
 	}
 	////パーティクルをnewする
 	//deathParticle_ = new DeathParticles();
@@ -141,6 +152,14 @@ void GameScene::Update() {
 		else
 		{
 			enemy->Update();
+			CheckAllCollisios();
+		}
+	}
+	for (MoveEnemy* moveEnemy : moveEnemies_) {
+		if (!moveEnemy) {
+			continue;
+		} else {
+			moveEnemy->Update();
 			CheckAllCollisios();
 		}
 	}
@@ -205,6 +224,13 @@ void GameScene::Draw() {
 		}
 		enemy->Draw();
 	}
+	for (MoveEnemy* moveEnemy : moveEnemies_) {
+		if (!moveEnemy) {
+			continue;
+		}
+		moveEnemy->Draw();
+	}
+
 	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock) {

@@ -135,16 +135,18 @@ public:
 	/// </summary>
 	void OnCollision(const Enemy* enemy);
 
+	Vector3 GetPlayerDirection() const { return playerDirection; }
+
 private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;
 	LRDirection lrDirection_ = LRDirection::kRight;
 
 	Vector3 velocity_ = {};
-	static inline const float kAceeleration = 0.01f;
+	static inline const float kAceeleration = 0.001f;
 	Model* playerModel_=nullptr;
-	static inline const float kAttenuation = 0.1f;
-	static inline const float kLimitRunSpeed = 0.2f;
+	static inline const float kAttenuation = 0.01f;
+	static inline const float kLimitRunSpeed = 0.01f;
 
 	//旋回開始時の角度
 	float turnFirstRotationY_ = 0.0f;
@@ -177,5 +179,7 @@ private:
 
 	//着磁の速度減衰率
 	static inline const float kAtteuationWall = 0.5f;
+
+	Vector3 playerDirection = {};
 };
 

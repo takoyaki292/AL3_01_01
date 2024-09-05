@@ -19,7 +19,7 @@ void Player::Initalize(Model* model, ViewProjection* viewProjection, const Vecto
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	worldTransform_.translation_.y = 2.0f;
-	worldTransform_.translation_.x = 2.0f;
+	worldTransform_.translation_.x = 10.0f;
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 
 	viewProjection_ = viewProjection;
@@ -37,6 +37,7 @@ void Player::Update() {
 			if (velocity_.x < 0.0f) {
 				velocity_.x *= (1.0f - kAttenuation);
 			}
+			playerDirection.x = 1;
 			acceleration.x += kAceeleration;
 			// 向かう方向に変わる
 			if (lrDirection_ != LRDirection::kRight) {
@@ -48,6 +49,7 @@ void Player::Update() {
 			if (velocity_.x > 0.0f) {
 				velocity_.x *= (1.0f - kAttenuation);
 			}
+			playerDirection.x = -1;
 			acceleration.x -= kAceeleration;
 			// 向かう方向に変わる
 			if (lrDirection_ != LRDirection::kLeft) {
