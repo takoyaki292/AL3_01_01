@@ -87,7 +87,7 @@ private: // メンバ変数
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 	Player* player_ = nullptr;
 	CameraController* cameraController_ = nullptr;
-
+	Vector3 cameraPos;
 	//Enemy* enemy_ ;
 	//敵の複数化
 	std::list<Enemy*> enemies_;

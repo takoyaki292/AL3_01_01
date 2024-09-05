@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "TextureManager.h"
 #include <cassert>
-
+#include "AxisIndicator.h"
 GameScene::GameScene() {}
 
 void GameScene::GenerateBlocks() {
@@ -107,7 +107,7 @@ void GameScene::Initialize() {
 	cameraController_->SetMovebleArea({0, 500, 0, 70});
 
 	modelEnemy_ = Model::CreateFromOBJ("playerModel", true);
-	for (uint32_t i = 0; i < 1; ++i) {
+	for (uint32_t i = 0; i < 0; ++i) {
 		Enemy* newEnemy = new Enemy();
 		Vector3 enemyPosition = {10.f+ 4 * i, 2.f, 0};
 		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
@@ -119,6 +119,10 @@ void GameScene::Initialize() {
 	//modelDeathParticles_ = Model::CreateFromOBJ("playerModel", true);
 	////デスパーティクルを初期化する
 	//deathParticle_->Initalize(modelDeathParticles_,&viewProjection_,playerPosition);
+	
+	AxisIndicator::GetInstance()->SetVisible(true);
+
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 }
 
 void GameScene::Update() {

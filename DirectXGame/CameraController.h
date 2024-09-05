@@ -56,7 +56,9 @@ public:
 	Vector3 Lerp(const Vector3& a, const Vector3& b, float t);
 
 	
-	//Rest setter();
+	Vector3 GettargetOffset_() const { return targetOffset_; }
+
+
 	static inline const float kInterpolationRate = 0.1f;
 	//速度の掛け算
 	static inline const float kVelocityBias = 2;
@@ -66,8 +68,12 @@ public:
 	private:
 	ViewProjection* viewProjection_;
 	Player* target_ = nullptr;
-	Vector3 targetOffset_ = {0, 0, -40.0f};
+	Vector3 targetOffset_ = {0, 0.f, -40.0f};
 	Vector3 targetCoordinates = {};
+	float cameraPos[3] = {targetOffset_.x, targetOffset_.y, targetOffset_.z};
+	float Lerp(float x1, float x2, float t);
+	const float kAutoScrollSpeed = 0.01f;
+	const float deltaTime = 0.1f;
 	};
 
  
