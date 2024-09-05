@@ -22,24 +22,35 @@ void CameraController::Initialize(ViewProjection* viewProjection) {
 
 void CameraController::Update() {
 	SetTarget(target_);
-	
-	const WorldTransform& targeWorldTransform = target_->GetWorldTransform();
-	//追従対象とオフセットからカメラの目標座標を計算
-	targetCoordinates.x = 
-		targeWorldTransform.translation_.x + targetOffset_.x+targetVelocity*kVelocityBias;
-	targetCoordinates.y =
-	    targeWorldTransform.translation_.y + targetOffset_.y + targetVelocity * kVelocityBias;
-	targetCoordinates.z =
-	    targeWorldTransform.translation_.z + targetOffset_.z + targetVelocity * kVelocityBias;
 
-	//座標保管によりゆったり追従
-	viewProjection_->translation_ =
-	    Lerp(viewProjection_->translation_, targetCoordinates, kInterpolationRate);
-	//移動範囲宣言
-	viewProjection_->translation_.x =std::max(viewProjection_->translation_.x,movableArea_.left);
-	//viewProjection_->translation_.x =std::min(viewProjection_->translation_.x,movableArea_.right);
-	//viewProjection_->translation_.y =std::max(viewProjection_->translation_.y,movableArea_.bottom);
-	//viewProjection_->translation_.y =std::min(viewProjection_->translation_.y,movableArea_.top);
+	// ターゲットが設定されている場合
+	if (target_) {
+		const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
+
+		// 追従対象とオフセットからカメラの目標座標を計算
+		targetCoordinates.x =
+		    targetWorldTransform.translation_.x + targetOffset_.x + targetVelocity * kVelocityBias;
+		targetCoordinates.y =
+		    targetWorldTransform.translation_.y + targetOffset_.y + targetVelocity * kVelocityBias;
+		targetCoordinates.z =
+		    targetWorldTransform.translation_.z + targetOffset_.z + targetVelocity * kVelocityBias;
+
+		// 座標保管によりゆったり追従
+		viewProjection_->translation_ =
+		    Lerp(viewProjection_->translation_, targetCoordinates, kInterpolationRate);
+	}
+
+	// オートスクロール処理 (X軸方向に一定速度で移動)
+	viewProjection_->translation_.x += kAutoScrollSpeed; // 自動スクロール速度を加算
+
+	// 移動範囲宣言
+	viewProjection_->translation_.x = std::max(viewProjection_->translation_.x, movableArea_.left);
+	viewProjection_->translation_.x = std::min(viewProjection_->translation_.x, movableArea_.right);
+	viewProjection_->translation_.y =
+	    std::max(viewProjection_->translation_.y, movableArea_.bottom);
+	viewProjection_->translation_.y = std::min(viewProjection_->translation_.y, movableArea_.top);
+
+	// マージン範囲による制御
 	viewProjection_->translation_.x =
 	    std::max(viewProjection_->translation_.x, targetCoordinates.x + margin.left);
 	viewProjection_->translation_.x =
@@ -47,8 +58,9 @@ void CameraController::Update() {
 	viewProjection_->translation_.y =
 	    std::max(viewProjection_->translation_.y, targetCoordinates.y + margin.bottom);
 	viewProjection_->translation_.y =
-	    std::min(viewProjection_->translation_.y, targetCoordinates.x + margin.top);
+	    std::min(viewProjection_->translation_.y, targetCoordinates.y + margin.top);
 
+	// 行列の更新
 	viewProjection_->UpdateMatrix();
 	viewProjection_->TransferMatrix();
 }

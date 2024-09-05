@@ -100,16 +100,16 @@ void GameScene::Initialize() {
 	player_->SetMapChipField(mapChipField_);
 
 	/// カメラコントロールの初期化
-	cameraController_ = new CameraController();
-	cameraController_->Initialize(&viewProjection_);
-	cameraController_->SetTarget(player_);
-	cameraController_->Reset();
-	cameraController_->SetMovebleArea({0, 500, 0, 70});
+	cameraController_ = new CameraController(); // カメラコントローラを生成
+	cameraController_->Initialize(&viewProjection_); // ビュープロジェクションを渡して初期化
+	cameraController_->SetTarget(player_); // ターゲットとしてプレイヤーを設定
+	cameraController_->Reset();            // カメラの状態をリセット
+	cameraController_->SetMovebleArea({0, 500, 0, 70}); // カメラの移動範囲を指定
 
 	modelEnemy_ = Model::CreateFromOBJ("playerModel", true);
 	for (uint32_t i = 0; i < 1; ++i) {
 		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = {10.f+ 4 * i, 2.f, 0};
+		Vector3 enemyPosition = {0.f+ 4 * i, 2.f, 0};
 		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
 		enemies_.push_back(newEnemy);
 	}

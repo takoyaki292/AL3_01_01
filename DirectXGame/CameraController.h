@@ -68,6 +68,7 @@ public:
 	Player* target_ = nullptr;
 	Vector3 targetOffset_ = {0, 0, -40.0f};
 	Vector3 targetCoordinates = {};
+	const float kAutoScrollSpeed = 0.05f; // カメラの自動スクロール速度（必要に応じて調整）
 	};
 
  
