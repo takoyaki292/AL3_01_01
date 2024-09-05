@@ -52,7 +52,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//TitleScene* titleScene = nullptr;
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
-	win->CreateGameWindow(L"GC2B_08_シミズ_タクミ");
+	win->CreateGameWindow(L"takasi taero!");
 
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
