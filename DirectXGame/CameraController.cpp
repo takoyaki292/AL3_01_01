@@ -22,7 +22,7 @@ void CameraController::Initialize(ViewProjection* viewProjection) {
 
 void CameraController::Update() {
 	SetTarget(target_);
-	
+	//pv = target_->GetVelocity();
 	const WorldTransform& targeWorldTransform = target_->GetWorldTransform();
 	//追従対象とオフセットからカメラの目標座標を計算
 	targetCoordinates.x = 
@@ -49,6 +49,11 @@ void CameraController::Update() {
 	viewProjection_->translation_.y =
 	    std::min(viewProjection_->translation_.y, targetCoordinates.x + margin.top);
 
+	viewProjection_->translation_ = target_->GetWorldTransform().translation_;
+	viewProjection_->rotation_ = target_->GetWorldTransform().rotation_;
+//	viewProjection_->rotation_.y = targeWorldTransform.rotation_.y;
+	//viewProjection_->rotation_.z = tWorldTransform.rotation_.z;
+
 	viewProjection_->UpdateMatrix();
 	viewProjection_->TransferMatrix();
 }
@@ -58,7 +63,7 @@ void CameraController::Draw() {}
 void CameraController::Reset() { 
 	SetTarget(target_);
 	const WorldTransform& targeWorldTransform = target_->GetWorldTransform();
-	//viewProjection_.translation_ = targetWorldTransform_.translation_ + targetOffset_;
+
 	(*viewProjection_).translation_.x = targeWorldTransform.translation_.x + targetOffset_.x;
 	(*viewProjection_).translation_.y = targeWorldTransform.translation_.y + targetOffset_.y;
 	(*viewProjection_).translation_.z = targeWorldTransform.translation_.z + targetOffset_.z;

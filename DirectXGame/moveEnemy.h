@@ -55,25 +55,8 @@ public:
 	/// <param name="player"></param>
 	void OnCollisiton(const Player* player);
 
-	// 内積の関数
-	float Dot(const Vector3& v1, const Vector3& v2) {
-		float a = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
-		return a;
-	}
+	
 
-
-// 2点間の距離を計算
-	float Distance(const Vector3& a, const Vector3& b) {
-		return sqrt((float)pow(b.x - a.x, 2) + (float)pow(b.y - a.y, 2) + (float)pow(b.z - a.z, 2));
-	}
-
-	// ベクトルの正規化（方向ベクトルを単位ベクトルにする）
-	Vector3 Normalize(const Vector3& vec) {
-		float length = sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-		return {vec.x / length, vec.y / length, vec.z / length};
-	}
-
-	Vector3 trackingSpeed(Vector3& enemy, Vector3& player, float enemySpeed);
 
 private:
 	WorldTransform worldTransform_;

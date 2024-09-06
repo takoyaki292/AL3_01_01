@@ -45,6 +45,7 @@ public:
 	WorldTransform& GetWorldTransform();
 
 	const Vector3& GetVelocity() const { return velocity_; }
+	//const Vector3& Get() const { return ; }
 
 
 	/// <summary>

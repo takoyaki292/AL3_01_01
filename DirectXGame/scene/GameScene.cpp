@@ -55,6 +55,45 @@ bool GameScene::IsCollision(AABB a, AABB b) {
 	return isF;
 }
 
+Vector3 GameScene::trackingSpeed(Vector3& enemy, Vector3& player, float enemySpeed) {
+	// プレイヤーと敵の間の方向ベクトルを計算
+	Vector3 direction = {player.x - enemy.x, player.y - enemy.y, 0};
+	float em = enemySpeed;
+	// 方向ベクトルを正規化（単位ベクトルにする）
+	direction = Normalize(direction);
+
+	// 敵の位置を更新（方向ベクトルに速度を掛けて移動）
+	enemy.x += direction.x * em;
+	enemy.y += direction.y * em;
+	//enemy.z += direction.z * enemySpeed;
+
+	return enemy; // 更新後の敵の位置を返す
+
+}
+
+Vector3 GameScene::A(Vector3& enemy, Vector3& player, Vector3 enemyDirection) { 
+	// 敵の座標とプレイヤーの座標を比べる
+	if (enemy.x >= player.x &&
+	    enemy.y >= player.y) {
+		enemyDirection.x = -1;
+		enemyDirection.y = -1;
+	}
+	if (enemy.x < player.x&&
+	    enemy.y > player.y) {
+		enemyDirection.x = 1;
+		enemyDirection.y = -1;
+	}
+	if (enemy.x > player.x && enemy.y < player.y) {
+		enemyDirection.x = -1;
+		enemyDirection.y = 1;
+	}
+	if (enemy.x < player.x && enemy.y < player.y) {
+		enemyDirection.x = 1;
+		enemyDirection.y = 1;
+	}
+	return enemyDirection;
+}
+
 GameScene::~GameScene() {
 	delete mapChipField_;
 	delete debugCamera_;
@@ -65,10 +104,10 @@ GameScene::~GameScene() {
 		delete kEnemy;
 		// delete newEnemy;
 	}
-	for (MoveEnemy* kMoveEnemy : moveEnemies_)
-	{
-		delete kMoveEnemy;
-	}
+	//for (MoveEnemy* kMoveEnemy : moveEnemies_)
+	//{
+	//	delete kMoveEnemy;
+	//}
 	//delete deathParticle_;
 }
 
@@ -115,15 +154,22 @@ void GameScene::Initialize() {
 		Vector3 enemyPosition = {0.f+ 4 * i, 2.f, 0};
 		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
 		enemies_.push_back(newEnemy);
+
+		MoveEnemy* newMoveEnemy = new MoveEnemy();
+		Vector3 moveEnemyPosition = {10.f + 4 * i, 2.f, 0};
+		newMoveEnemy->Initalize(modelEnemy_, &viewProjection_, moveEnemyPosition);
+		moveEnemies_.push_back(newMoveEnemy);
 	}
-	modelMoveEnemy_ = Model::CreateFromOBJ("playerModel", true);
-	for (uint32_t i = 0; i < 3; ++i)
-	{
-		MoveEnemy* newMoveEnmey = new MoveEnemy();
-		Vector3 enemyPosition = {20.f + 4 * i, 10.f, 0};
-		newMoveEnmey->Initalize(modelMoveEnemy_, &viewProjection_, enemyPosition);
-		moveEnemies_.push_back(newMoveEnmey);
-	}
+	//Vector3 moveEnemyPosition = {0, 0, 0};
+	//moveEnemy->Initalize(modelEnemy_, &viewProjection_, playerPosition);
+	//modelMoveEnemy_ = Model::CreateFromOBJ("playerModel", true);
+	//for (uint32_t i = 0; i < 3; ++i)
+	//{
+	//	MoveEnemy* newMoveEnmey = new MoveEnemy();
+	//	Vector3 enemyPosition = {20.f + 4 * i, 10.f, 0};
+	//	newMoveEnmey->Initalize(modelMoveEnemy_, &viewProjection_, enemyPosition);
+	//	moveEnemies_.push_back(newMoveEnmey);
+	//}
 	////パーティクルをnewする
 	//deathParticle_ = new DeathParticles();
 	//// モデルプレイヤーの読み込む
@@ -152,6 +198,7 @@ void GameScene::Update() {
 		else
 		{
 			enemy->Update();
+			//moveEnemy->Update();
 			CheckAllCollisios();
 		}
 	}
@@ -160,11 +207,20 @@ void GameScene::Update() {
 			continue;
 		} else {
 			moveEnemy->Update();
-			CheckAllCollisios();
+			// moveEnemy->Update();
+			//CheckAllCollisios();
 		}
 	}
+	//for (MoveEnemy* moveEnemy : moveEnemies_) {
+	//	if (!moveEnemy) {
+	//		continue;
+	//	} else {
+	//		moveEnemy->Update();
+	//		CheckAllCollisios();
+	//	}
+	//}
 	player_->Update();
-
+	
 	cameraController_->Update();
 	//if (isDeachPaticled == true)
 	//{
@@ -223,13 +279,21 @@ void GameScene::Draw() {
 			continue;
 		}
 		enemy->Draw();
+		//moveEnemy->Draw();
 	}
 	for (MoveEnemy* moveEnemy : moveEnemies_) {
 		if (!moveEnemy) {
 			continue;
 		}
 		moveEnemy->Draw();
+		// moveEnemy->Draw();
 	}
+	//for (MoveEnemy* moveEnemy : moveEnemies_) {
+	//	if (!moveEnemy) {
+	//		continue;
+	//	}
+	//	moveEnemy->Draw();
+	//}
 
 	for (std::vector<WorldTransform*> worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
