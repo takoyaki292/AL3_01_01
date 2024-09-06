@@ -54,10 +54,6 @@ public:
 	/// </summary>
 	/// <param name="player"></param>
 	void OnCollisiton(const Player* player);
-
-	
-
-
 private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;

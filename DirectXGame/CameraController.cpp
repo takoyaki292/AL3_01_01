@@ -51,7 +51,8 @@ void CameraController::Update() {
 
 	viewProjection_->translation_ = target_->GetWorldTransform().translation_;
 	viewProjection_->rotation_ = target_->GetWorldTransform().rotation_;
-//	viewProjection_->rotation_.y = targeWorldTransform.rotation_.y;
+	//viewProjection_->translation_.x = -30.0f;
+	        //	viewProjection_->rotation_.y = targeWorldTransform.rotation_.y;
 	//viewProjection_->rotation_.z = tWorldTransform.rotation_.z;
 
 	viewProjection_->UpdateMatrix();

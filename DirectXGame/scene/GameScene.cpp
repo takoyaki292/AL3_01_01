@@ -104,10 +104,10 @@ GameScene::~GameScene() {
 		delete kEnemy;
 		// delete newEnemy;
 	}
-	//for (MoveEnemy* kMoveEnemy : moveEnemies_)
-	//{
-	//	delete kMoveEnemy;
-	//}
+	for (MoveEnemy* kMoveEnemy : moveEnemies_)
+	{
+		delete kMoveEnemy;
+	}
 	//delete deathParticle_;
 }
 
@@ -156,7 +156,7 @@ void GameScene::Initialize() {
 		enemies_.push_back(newEnemy);
 
 		MoveEnemy* newMoveEnemy = new MoveEnemy();
-		Vector3 moveEnemyPosition = {10.f + 4 * i, 2.f, 0};
+		Vector3 moveEnemyPosition = {10.f + 4 * i, 3.f, 0};
 		newMoveEnemy->Initalize(modelEnemy_, &viewProjection_, moveEnemyPosition);
 		moveEnemies_.push_back(newMoveEnemy);
 	}

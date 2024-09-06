@@ -30,7 +30,3 @@ Vector3 MoveEnemy::GetWorldPosition() {
 }
 
 AABB MoveEnemy::GetAABB() { return AABB(); }
-
-//void MoveEnemy::OnCollisiton(const Player* player) {}
-
-
