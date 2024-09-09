@@ -107,7 +107,7 @@ void GameScene::Initialize() {
 	cameraController_->SetMovebleArea({0, 500, 0, 70});
 
 	modelEnemy_ = Model::CreateFromOBJ("playerModel", true);
-	for (uint32_t i = 0; i < 1; ++i) {
+	for (uint32_t i = 0; i < 0; ++i) {
 		Enemy* newEnemy = new Enemy();
 		Vector3 enemyPosition = {20.f+ 4 * i, 2.f, 0};
 		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
@@ -150,7 +150,7 @@ void GameScene::Update() {
 	if (isDeachPaticled == true)
 	{
 		// パーティクルの更新処理
-		deathParticle_->Update();
+		//deathParticle_->Update();
 	}
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_BACK)) {
