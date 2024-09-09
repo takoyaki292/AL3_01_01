@@ -94,7 +94,8 @@ Vector3 GameScene::A(Vector3& enemy, Vector3& player, Vector3 enemyDirection) {
 	return enemyDirection;
 }
 
-Player* GameScene::GetPlayer() const { return player_; }
+
+
 
 GameScene::~GameScene() {
 	delete mapChipField_;
@@ -162,7 +163,7 @@ void GameScene::Initialize() {
 		newMoveEnemy->Initalize(modelEnemy_, &viewProjection_, moveEnemyPosition);
 		moveEnemies_.push_back(newMoveEnemy);
 	}
-	
+	player_ = GetPlayer();
 	////パーティクルをnewする
 	//deathParticle_ = new DeathParticles();
 	//// モデルプレイヤーの読み込む
@@ -260,6 +261,7 @@ void GameScene::Draw() {
 	player_->Draw();
 	//for (Enemy* enemy : enemies_) {
 	//	if (!enemy) {
+	// 
 	//		continue;
 	//	}
 	//	enemy->Draw();
@@ -309,3 +311,5 @@ void GameScene::Draw() {
 
 #pragma endregion
 }
+
+Player* GameScene::GetPlayer()  { return player_; }

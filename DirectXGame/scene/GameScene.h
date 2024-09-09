@@ -85,7 +85,11 @@ public: // メンバ関数
 	Vector3 trackingSpeed(Vector3& enemy, Vector3& player, float enemySpeed);
 	Vector3 A(Vector3& enemy, Vector3& player, Vector3 enemyDirection);
 
-	Player* GetPlayer() const;
+	//Player GetPlayer() const;
+
+	//void GetPlayer(Player* player);
+
+	Player* GetPlayer();
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -114,7 +118,7 @@ private: // メンバ変数
 	
 	//Enemy* enemy_ ;
 	//敵の複数化
-	//std::list<Enemy*> enemies_;
+	std::list<Enemy*> enemies_;
 	std::list<MoveEnemy*> moveEnemies_;
 	
 	//DeathParticles* deathParticle_ = nullptr;

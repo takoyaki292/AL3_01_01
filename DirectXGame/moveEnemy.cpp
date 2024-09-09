@@ -1,19 +1,23 @@
 #include "moveEnemy.h"
 #include "WorldTransform.h"
+//#include "GameScene.h"
 //class GameScene;
 void MoveEnemy::Initalize(Model* model, ViewProjection* viewProjection, const Vector3& position) {
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	viewProjection_ = viewProjection;
 	enemyModel_ = model;
-
+	gameScene_->Initialize();
+	
 }
 
 void MoveEnemy::Update() {
+	//player_ = gameScene_->GetPlayer();
+	player_ = GameScene::GetPlayer();
 	if (player_) {
-		// プレイヤーの位置と向きを取得
+		
 		Vector3 playerPosition = player_->GetWorldTransform().translation_;
-		Vector3 playerDirection = player_->GetWorldTransform().rotation_; // プレイヤーの向きを取得
+		Vector3 playerDirection = player_->GetWorldTransform().rotation_;
 
 		// 敵の位置と向きを取得
 		Vector3 enemyPosition = worldTransform_.translation_;

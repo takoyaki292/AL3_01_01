@@ -86,8 +86,8 @@ private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;
 	Model* enemyModel_ = nullptr;
-	Player* player_=nullptr;
-	//GameScene* gameScene_=nullptr;
+	Player* player_;
+	GameScene* gameScene_;
 	MapChipField* mapChipField_ = nullptr;
 	// 敵の歩き速度
 	static inline const float kMoveSpeed = 0.05f;
