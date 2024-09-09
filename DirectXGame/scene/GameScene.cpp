@@ -211,14 +211,7 @@ void GameScene::Update() {
 			//CheckAllCollisios();
 		}
 	}
-	//for (MoveEnemy* moveEnemy : moveEnemies_) {
-	//	if (!moveEnemy) {
-	//		continue;
-	//	} else {
-	//		moveEnemy->Update();
-	//		CheckAllCollisios();
-	//	}
-	//}
+	
 	player_->Update();
 	
 	cameraController_->Update();
@@ -278,7 +271,7 @@ void GameScene::Draw() {
 		if (!enemy) {
 			continue;
 		}
-		enemy->Draw();
+		//enemy->Draw();
 		//moveEnemy->Draw();
 	}
 	for (MoveEnemy* moveEnemy : moveEnemies_) {
