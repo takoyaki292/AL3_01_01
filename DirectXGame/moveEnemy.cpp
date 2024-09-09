@@ -7,7 +7,7 @@ void MoveEnemy::Initalize(Model* model, ViewProjection* viewProjection, const Ve
 	worldTransform_.translation_ = position;
 	viewProjection_ = viewProjection;
 	enemyModel_ = model;
-	gameScene_->Initialize();
+	//gameScene_->Initialize();
 	
 }
 

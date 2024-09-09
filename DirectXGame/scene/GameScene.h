@@ -118,7 +118,7 @@ private: // メンバ変数
 	
 	//Enemy* enemy_ ;
 	//敵の複数化
-	std::list<Enemy*> enemies_;
+	//std::list<Enemy*> enemies_;
 	std::list<MoveEnemy*> moveEnemies_;
 	
 	//DeathParticles* deathParticle_ = nullptr;
