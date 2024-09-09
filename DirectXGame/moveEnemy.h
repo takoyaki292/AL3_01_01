@@ -5,6 +5,7 @@
 #include "WorldTransform.h"
 #include "Player.h"
 #include <cmath>
+#include "GameScene.h"
     // #include "Bullet.h"
 
 class MapChipField;
@@ -54,17 +55,44 @@ public:
 	/// </summary>
 	/// <param name="player"></param>
 	void OnCollisiton(const Player* player);
+
+
+	/// <summary>
+	/// 内積の関数
+	/// </summary>
+	/// <param name="v1"></param>
+	/// <param name="v2"></param>
+	/// <returns></returns>
+	float Dot(const Vector3& v1, const Vector3& v2) {
+		float a = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+		return a;
+	}
+	float Length(const Vector3& v) { return (float)sqrt(v.x * v.x + v.y * v.y + v.z * v.z); }
+	/// <summary>
+	/// 正規化の関数
+	/// </summary>
+	/// <param name="v"></param>
+	/// <returns></returns>
+	Vector3 Normalize(const Vector3& v) {
+		float m = Length(v);
+		Vector3 a;
+		a.x = v.x / m;
+		a.y = v.y / m;
+		a.z = v.z / m;
+		return a;
+	}
+
 private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;
 	Model* enemyModel_ = nullptr;
-
+	Player* player_=nullptr;
+	//GameScene* gameScene_=nullptr;
 	MapChipField* mapChipField_ = nullptr;
 	// 敵の歩き速度
 	static inline const float kMoveSpeed = 0.05f;
 	// 移動量
 	Vector3 velocity_ = {};
-	Player* player_;
 	
 	// 経過時間
 	float walkTimer_ = 0.0f;
@@ -74,9 +102,11 @@ private:
 	// キャラクターの当たり判定のサイズ
 	static inline const float kWidth = 1.6f;
 	static inline const float kHeight = 1.6f;
-	float enemySpeed_ = 0.01f;
-	Vector3 playerPos;
-	Vector3 enemyDirection = {};
-	Vector3 playerDirection = {};
+	float enemySpeed_ = 0.1f;
+	//Vector3 playerPos;
+	//Vector3 enemyDirection = {};
+	//Vector3 playerDirection = {};
 	float isA = true;
+	
+	//GameScene* gameScene=nullptr;
 };

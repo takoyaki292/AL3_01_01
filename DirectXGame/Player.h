@@ -138,6 +138,8 @@ public:
 
 	Vector3 GetPlayerDirection() const { return playerDirection; }
 
+	
+
 private:
 	WorldTransform worldTransform_;
 	ViewProjection* viewProjection_;

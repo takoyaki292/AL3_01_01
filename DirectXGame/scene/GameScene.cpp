@@ -29,18 +29,18 @@ void GameScene::GenerateBlocks() {
 void GameScene::CheckAllCollisios() { 
 	//AABB型を二つ作る
 	//自キャラと敵キャラを作る
-	AABB aabb1, aabb2;
+	AABB aabb1; // aabb2;
 	//自キャラの座標
 	aabb1 = player_->GetAABB();
 	
-	for (Enemy* enemy : enemies_){
-		aabb2 = enemy->GetAABB();
-		if (IsCollision(aabb1, aabb2))
-		{
-			player_->OnCollision(enemy);
-			enemy->OnCollisiton(player_);
-		}
-	}
+	//for (Enemy* enemy : enemies_){
+	//	aabb2 = enemy->GetAABB();
+	//	if (IsCollision(aabb1, aabb2))
+	//	{
+	//		player_->OnCollision(enemy);
+	//		enemy->OnCollisiton(player_);
+	//	}
+	//}
 	//DebugText::GetInstance()->ConsolePrintf("enemy ceiling\n\n");
 }
 
@@ -94,16 +94,18 @@ Vector3 GameScene::A(Vector3& enemy, Vector3& player, Vector3 enemyDirection) {
 	return enemyDirection;
 }
 
+Player* GameScene::GetPlayer() const { return player_; }
+
 GameScene::~GameScene() {
 	delete mapChipField_;
 	delete debugCamera_;
 	delete player_;
 	delete cameraController_;
 	// delete enemy_;
-	for (Enemy* kEnemy : enemies_) {
-		delete kEnemy;
-		// delete newEnemy;
-	}
+	//for (Enemy* kEnemy : enemies_) {
+	//	delete kEnemy;
+	//	// delete newEnemy;
+	//}
 	for (MoveEnemy* kMoveEnemy : moveEnemies_)
 	{
 		delete kMoveEnemy;
@@ -143,33 +145,24 @@ void GameScene::Initialize() {
 
 	/// カメラコントロールの初期化
 	cameraController_ = new CameraController();
-	cameraController_->Initialize(&viewProjection_);
+	cameraController_->Initialize(& viewProjection_);
 	cameraController_->SetTarget(player_);
 	cameraController_->Reset();
 	cameraController_->SetMovebleArea({0, 500, 0, 70});
 
 	modelEnemy_ = Model::CreateFromOBJ("playerModel", true);
 	for (uint32_t i = 0; i < 1; ++i) {
-		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = {0.f+ 4 * i, 2.f, 0};
-		newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
-		enemies_.push_back(newEnemy);
+		//Enemy* newEnemy = new Enemy();
+		//Vector3 enemyPosition = {0.f+ 4 * i, 2.f, 0};
+		//newEnemy->Initalize(modelEnemy_, &viewProjection_, enemyPosition);
+		//enemies_.push_back(newEnemy);
 
 		MoveEnemy* newMoveEnemy = new MoveEnemy();
-		Vector3 moveEnemyPosition = {10.f + 4 * i, 3.f, 0};
+		Vector3 moveEnemyPosition = {2.f + 0 * i, 2.f, 0};
 		newMoveEnemy->Initalize(modelEnemy_, &viewProjection_, moveEnemyPosition);
 		moveEnemies_.push_back(newMoveEnemy);
 	}
-	//Vector3 moveEnemyPosition = {0, 0, 0};
-	//moveEnemy->Initalize(modelEnemy_, &viewProjection_, playerPosition);
-	//modelMoveEnemy_ = Model::CreateFromOBJ("playerModel", true);
-	//for (uint32_t i = 0; i < 3; ++i)
-	//{
-	//	MoveEnemy* newMoveEnmey = new MoveEnemy();
-	//	Vector3 enemyPosition = {20.f + 4 * i, 10.f, 0};
-	//	newMoveEnmey->Initalize(modelMoveEnemy_, &viewProjection_, enemyPosition);
-	//	moveEnemies_.push_back(newMoveEnmey);
-	//}
+	
 	////パーティクルをnewする
 	//deathParticle_ = new DeathParticles();
 	//// モデルプレイヤーの読み込む
@@ -191,34 +184,25 @@ void GameScene::Update() {
 			worldTransformBlock->TransferMatrix();
 		}
 	}
-	for (Enemy* enemy : enemies_) {
-		if (!enemy) {
-			continue;
-		}
-		else
-		{
-			enemy->Update();
-			//moveEnemy->Update();
-			CheckAllCollisios();
-		}
-	}
+	//for (Enemy* enemy : enemies_) {
+	//	if (!enemy) {
+	//		continue;
+	//	}
+	//	else
+	//	{
+	//		enemy->Update();
+	//		//moveEnemy->Update();
+	//		CheckAllCollisios();
+	//	}
+	//}
 	for (MoveEnemy* moveEnemy : moveEnemies_) {
 		if (!moveEnemy) {
 			continue;
 		} else {
 			moveEnemy->Update();
-			// moveEnemy->Update();
-			//CheckAllCollisios();
 		}
 	}
-	//for (MoveEnemy* moveEnemy : moveEnemies_) {
-	//	if (!moveEnemy) {
-	//		continue;
-	//	} else {
-	//		moveEnemy->Update();
-	//		CheckAllCollisios();
-	//	}
-	//}
+	
 	player_->Update();
 	
 	cameraController_->Update();
@@ -274,13 +258,13 @@ void GameScene::Draw() {
 	/// </summary>
 
 	player_->Draw();
-	for (Enemy* enemy : enemies_) {
-		if (!enemy) {
-			continue;
-		}
-		enemy->Draw();
-		//moveEnemy->Draw();
-	}
+	//for (Enemy* enemy : enemies_) {
+	//	if (!enemy) {
+	//		continue;
+	//	}
+	//	enemy->Draw();
+	//	//moveEnemy->Draw();
+	//}
 	for (MoveEnemy* moveEnemy : moveEnemies_) {
 		if (!moveEnemy) {
 			continue;

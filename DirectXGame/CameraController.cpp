@@ -22,24 +22,27 @@ void CameraController::Initialize(ViewProjection* viewProjection) {
 
 void CameraController::Update() {
 	SetTarget(target_);
-	//pv = target_->GetVelocity();
+	SetTarget(target_);
+
 	const WorldTransform& targeWorldTransform = target_->GetWorldTransform();
-	//追従対象とオフセットからカメラの目標座標を計算
-	targetCoordinates.x = 
-		targeWorldTransform.translation_.x + targetOffset_.x+targetVelocity*kVelocityBias;
+	// 追従対象とオフセットからカメラの目標座標を計算
+	targetCoordinates.x =
+	    targeWorldTransform.translation_.x + targetOffset_.x + targetVelocity * kVelocityBias;
 	targetCoordinates.y =
 	    targeWorldTransform.translation_.y + targetOffset_.y + targetVelocity * kVelocityBias;
 	targetCoordinates.z =
 	    targeWorldTransform.translation_.z + targetOffset_.z + targetVelocity * kVelocityBias;
 
-	//座標保管によりゆったり追従
+	// 座標保管によりゆったり追従
 	viewProjection_->translation_ =
 	    Lerp(viewProjection_->translation_, targetCoordinates, kInterpolationRate);
-	//移動範囲宣言
-	viewProjection_->translation_.x =std::max(viewProjection_->translation_.x,movableArea_.left);
-	//viewProjection_->translation_.x =std::min(viewProjection_->translation_.x,movableArea_.right);
-	//viewProjection_->translation_.y =std::max(viewProjection_->translation_.y,movableArea_.bottom);
-	//viewProjection_->translation_.y =std::min(viewProjection_->translation_.y,movableArea_.top);
+	// 移動範囲宣言
+	viewProjection_->translation_.x = std::max(viewProjection_->translation_.x, movableArea_.left);
+	// viewProjection_->translation_.x
+	// =std::min(viewProjection_->translation_.x,movableArea_.right);
+	// viewProjection_->translation_.y
+	// =std::max(viewProjection_->translation_.y,movableArea_.bottom);
+	// viewProjection_->translation_.y =std::min(viewProjection_->translation_.y,movableArea_.top);
 	viewProjection_->translation_.x =
 	    std::max(viewProjection_->translation_.x, targetCoordinates.x + margin.left);
 	viewProjection_->translation_.x =
@@ -48,12 +51,6 @@ void CameraController::Update() {
 	    std::max(viewProjection_->translation_.y, targetCoordinates.y + margin.bottom);
 	viewProjection_->translation_.y =
 	    std::min(viewProjection_->translation_.y, targetCoordinates.x + margin.top);
-
-	viewProjection_->translation_ = target_->GetWorldTransform().translation_;
-	viewProjection_->rotation_ = target_->GetWorldTransform().rotation_;
-	//viewProjection_->translation_.x = -30.0f;
-	        //	viewProjection_->rotation_.y = targeWorldTransform.rotation_.y;
-	//viewProjection_->rotation_.z = tWorldTransform.rotation_.z;
 
 	viewProjection_->UpdateMatrix();
 	viewProjection_->TransferMatrix();

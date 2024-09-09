@@ -15,6 +15,7 @@
 #include "Enemy.h"
 #include "moveEnemy.h"
 #include <cmath>
+#include "moveEnemy.h"
 //#include "DeathParticles.h"
 
 #ifndef STRUCT_H
@@ -84,6 +85,8 @@ public: // メンバ関数
 	Vector3 trackingSpeed(Vector3& enemy, Vector3& player, float enemySpeed);
 	Vector3 A(Vector3& enemy, Vector3& player, Vector3 enemyDirection);
 
+	Player* GetPlayer() const;
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -93,7 +96,7 @@ private: // メンバ変数
 	Model* modelBlock_ = nullptr;
 	Model* modelPlayer_ = nullptr;
 	Model* modelEnemy_ = nullptr;
-	//Model* modelMoveEnemy_ = nullptr;
+	Model* modelMoveEnemy_ = nullptr;
 	Model* modelDeathParticles_ = nullptr;
 	
 
@@ -108,10 +111,10 @@ private: // メンバ変数
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 	Player* player_ = nullptr;
 	CameraController* cameraController_ = nullptr;
-	//MoveEnemy* moveEnemy=nullptr;
+	
 	//Enemy* enemy_ ;
 	//敵の複数化
-	std::list<Enemy*> enemies_;
+	//std::list<Enemy*> enemies_;
 	std::list<MoveEnemy*> moveEnemies_;
 	
 	//DeathParticles* deathParticle_ = nullptr;
