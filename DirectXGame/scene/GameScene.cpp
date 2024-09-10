@@ -159,11 +159,11 @@ void GameScene::Initialize() {
 		//enemies_.push_back(newEnemy);
 
 		MoveEnemy* newMoveEnemy = new MoveEnemy();
-		Vector3 moveEnemyPosition = {2.f + 0 * i, 2.f, 0};
-		newMoveEnemy->Initalize(modelEnemy_, &viewProjection_, moveEnemyPosition);
+		Vector3 moveEnemyPosition = {5.f + 0 * i, 5.f, 0};
+		newMoveEnemy->Initalize(modelEnemy_, &viewProjection_, moveEnemyPosition, player_);
 		moveEnemies_.push_back(newMoveEnemy);
 	}
-	player_ = GetPlayer();
+	//player_ = GetPlayer();
 	////パーティクルをnewする
 	//deathParticle_ = new DeathParticles();
 	//// モデルプレイヤーの読み込む
@@ -312,4 +312,4 @@ void GameScene::Draw() {
 #pragma endregion
 }
 
-Player* GameScene::GetPlayer()  { return player_; }
+//Player* GameScene::GetPlayer()  { return player_; }

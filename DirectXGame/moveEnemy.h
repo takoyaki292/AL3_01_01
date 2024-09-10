@@ -5,7 +5,6 @@
 #include "WorldTransform.h"
 #include "Player.h"
 #include <cmath>
-#include "GameScene.h"
     // #include "Bullet.h"
 
 class MapChipField;
@@ -22,7 +21,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initalize(Model* model, ViewProjection* viewProjection, const Vector3& position);
+	void Initalize(Model* model, ViewProjection* viewProjection, const Vector3& position, Player* player);
 
 	/// <summary>
 	/// 処理
@@ -73,13 +72,12 @@ public:
 	/// </summary>
 	/// <param name="v"></param>
 	/// <returns></returns>
-	Vector3 Normalize(const Vector3& v) {
-		float m = Length(v);
-		Vector3 a;
-		a.x = v.x / m;
-		a.y = v.y / m;
-		a.z = v.z / m;
-		return a;
+	Vector3 Normalize(const Vector3& vec) {
+		float length = sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+		if (length > 0.0f) {
+			return {vec.x / length, vec.y / length, vec.z / length};
+		}
+		return {0.0f, 0.0f, 0.0f}; // ベクトルがゼロの場合は正規化しない
 	}
 
 private:
