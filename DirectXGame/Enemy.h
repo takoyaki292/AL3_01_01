@@ -81,7 +81,7 @@ private:
 	// キャラクターの当たり判定のサイズ
 	static inline const float kWidth = 1.6f;
 	static inline const float kHeight = 1.6f;
-
+		
 	//Bullet bullet_;
 	//Model* modelEnemyBullet_ = nullptr;
 	//std::vector<Bullet> bullets_; // 弾のリスト
