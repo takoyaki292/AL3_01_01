@@ -107,10 +107,28 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="2d\ImGuiManager.cpp" />
+    <ClCompile Include="3D\WORLDTRANSFORM.CPP" />
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="CameraController.cpp" />
+    <ClCompile Include="ClearModel.cpp" />
+    <ClCompile Include="ClearScene.cpp" />
+    <ClCompile Include="DeathObject.cpp" />
+    <ClCompile Include="DeathParticles.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="ExplanationScene.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MapChipField.cpp" />
+    <ClCompile Include="math\Vector3.cpp" />
+    <ClCompile Include="MoveEnemy.cpp" />
+    <ClCompile Include="OverModel.cpp" />
+    <ClCompile Include="OverScene.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
+    <ClCompile Include="Skydome.cpp" />
+    <ClCompile Include="TitleModel.cpp" />
+    <ClCompile Include="TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2d\ImGuiManager.h" />
@@ -136,12 +154,28 @@
     <ClInclude Include="base\StringUtility.h" />
     <ClInclude Include="base\TextureManager.h" />
     <ClInclude Include="base\WinApp.h" />
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="CameraController.h" />
+    <ClInclude Include="ClearModel.h" />
+    <ClInclude Include="ClearScene.h" />
+    <ClInclude Include="DeathObject.h" />
+    <ClInclude Include="DeathParticles.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="ExplanationScene.h" />
     <ClInclude Include="input\Input.h" />
+    <ClInclude Include="MapChipField.h" />
     <ClInclude Include="math\Matrix4x4.h" />
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
+    <ClInclude Include="MoveEnemy.h" />
+    <ClInclude Include="OverModel.h" />
+    <ClInclude Include="OverScene.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="scene\GameScene.h" />
+    <ClInclude Include="Skydome.h" />
+    <ClInclude Include="TitleModel.h" />
+    <ClInclude Include="TitleScene.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
