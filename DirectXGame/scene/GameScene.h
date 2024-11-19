@@ -3,10 +3,32 @@
 #include "Audio.h"
 #include "DirectXCommon.h"
 #include "Input.h"
-#include "Model.h"
+#include "Model.h"		
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "MapChipField.h"
+#include <vector>
+#include "DebugCamera.h"
+#include "Player.h"
+#include "CameraController.h"
+#include "Enemy.h"
+#include "DeathParticles.h"
+
+#ifndef STRUCT_H
+#define STRUCT_H
+struct AABB {
+	Vector3 min;
+	Vector3 max;
+};
+#endif
+
+// ゲームのフェーズ
+enum class Phase {
+	kPlayer, // ゲームプレイ
+	kDeath,  // デス演出
+};
+
 
 /// <summary>
 /// ゲームシーン
@@ -39,10 +61,59 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	void GenerateBlocks();
+
+	/// <summary>
+	/// 全ての当たり判定を行う
+	/// </summary>
+	void CheckAllCollisios();
+
+	
+	bool IsCollision(AABB a,AABB b);
+	
+	//フェーズの切り替え
+	void ChangePhase();
+
+	bool IsFinished() const { return finished_; };
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
+
+	// モデル
+	Model* modelBlock_ = nullptr;
+	Model* modelPlayer_ = nullptr;
+	Model* modelEnemy_ = nullptr;
+	Model* modelDeathParticles_ = nullptr;
+	
+
+	bool isDebugCameraActive_ = false;
+	DebugCamera* debugCamera_ = nullptr;
+	// ブロック用のワールドトランスフォーム
+	// std::vector<WorldTransform*> worldTransformBlocks_;
+	//std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+	ViewProjection viewProjection_;
+	WorldTransform playerWorldTransform_;
+	MapChipField* mapChipField_;
+	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+	Player* player_ = nullptr;
+	CameraController* cameraController_ = nullptr;
+
+	//敵の複数化
+	std::list<Enemy*> enemies_;
+	
+	DeathParticles* deathParticle_ = nullptr;
+	bool isDeachPaticled = true;
+
+	//現在のフェーズ
+	Phase phase_;
+
+	//生きているかのフラグ
+	bool isDead_=false;
+	
+	//終了フラグ
+	bool finished_ = false;
 
 	/// <summary>
 	/// ゲームシーン用
