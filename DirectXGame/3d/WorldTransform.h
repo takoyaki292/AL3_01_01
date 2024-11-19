@@ -46,6 +46,17 @@ public:
 	/// 行列を転送する
 	/// </summary>
 	void TransferMatrix();
+
+	/// <summary>
+	/// 行列を計算・転送する
+	/// </summary>
+	void UpdateMatrix();
+
+	Matrix4x4 Mu(Matrix4x4 matrix1, Matrix4x4 matrix2);
+
+	Matrix4x4
+	    MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
+
 	/// <summary>
 	/// 定数バッファの取得
 	/// </summary>

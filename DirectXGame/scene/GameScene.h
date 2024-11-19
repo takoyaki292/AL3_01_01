@@ -7,7 +7,12 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-
+#include "MapChipField.h"
+#include <vector>
+#include "DebugCamera.h"
+#include "Player.h"
+#include "CameraController.h"
+#include "Enemy.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -39,11 +44,31 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	void GenerateBlocks();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
+	// モデル
+	Model* modelBlock_ = nullptr;
+	Model* modelPlayer_ = nullptr;
+	Model* modelEnemy_ = nullptr;
+
+	bool isDebugCameraActive_ = false;
+	DebugCamera* debugCamera_ = nullptr;
+	// ブロック用のワールドトランスフォーム
+	// std::vector<WorldTransform*> worldTransformBlocks_;
+	//std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+	ViewProjection viewProjection_;
+	WorldTransform playerWorldTransform_;
+	MapChipField* mapChipField_;
+	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+	Player* player_ = nullptr;
+	CameraController* cameraController_ = nullptr;
+
+	Enemy* enemy_ = nullptr;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
